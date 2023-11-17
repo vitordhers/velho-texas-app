@@ -1,0 +1,27 @@
+::ng-deep ion-tab-bar {
+  border: none;
+}
+
+ion-tab-bar.desktop {
+  box-shadow: -1px 2px 3px rgba(0, 0, 0, 0.27);
+}
+
+ion-tab-bar.mobile {
+  box-shadow: 0px -2px 3px rgba(0, 0, 0, 0.27);
+}
+
+.ink-bar {
+  background-color: #5a1f01;
+  position: absolute;
+  height: 3px;
+  max-width: 168px;
+  left: 0;
+}
+
+.desktop .ink-bar {
+  bottom: 0px;
+}
+
+.mobile .ink-bar {
+  top: 0px;
+}

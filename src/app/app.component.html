@@ -1,0 +1,143 @@
+<ion-app>
+  <ion-header *ngIf="headerVisible">
+    <app-searchtoolbar [cartIconDisabled]="cartIconDisabled"></app-searchtoolbar>
+  </ion-header>
+  <ion-split-pane contentId="outlet"
+    [disabled]="splitPaneDisabled"
+    (ionSplitPaneVisible)="isSplitPaneVisible($event)">
+    <ion-menu side="start"
+      contentId="outlet"
+      menuId="appMenu"
+      [swipeGesture]="platform.is('mobile')">
+      <ion-header>
+        <ion-toolbar color="tertiary">
+          <ion-buttons slot="start">
+            <ion-menu-toggle auto-hide="false"
+              *ngIf="!splitPaneVisible || splitPaneDisabled; else logoButton">
+              <a routerLink="/">
+                <ion-img src="/assets/img/logo/vt-quick-logo-sm.png"
+                  class="logo"></ion-img>
+              </a>
+            </ion-menu-toggle>
+            <ng-template #logoButton>
+              <a routerLink="/">
+                <ion-img src="/assets/img/logo/vt-quick-logo-sm.png"
+                  class="logo"></ion-img>
+              </a>
+            </ng-template>
+          </ion-buttons>
+          <ion-title class="ion-text-center
+          ion-no-padding
+          ion-margin-end
+          ion-padding-end"
+            color="primary"
+            style="font-weight: 600;">🌵 Menu</ion-title>
+        </ion-toolbar>
+
+      </ion-header>
+      <ion-content>
+        <ion-list class="ion-no-padding">
+          <ion-menu-toggle auto-hide="false"
+            *ngIf="!(authService.userIsAuthenticated | async)">
+            <ion-item lines="none"
+              routerLink="/entrar">
+              <span slot="start">🚪</span>
+              <ion-label>Entrar </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle auto-hide="false"
+            *ngIf="!(authService.userIsAuthenticated | async)">
+            <ion-item lines="none"
+              routerLink="/registrar">
+              <span slot="start">📝</span>
+              <ion-label> Registrar</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ng-container *ngIf="!splitPaneVisible || splitPaneDisabled; else allProducts">
+            <ion-menu-toggle auto-hide="false">
+              <ion-item lines="none"
+                routerLink="/produtos">
+                <span slot="start">📦</span>
+                <ion-label>Todos os Produtos</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          </ng-container>
+          <ng-template #allProducts>
+            <ion-item lines="none"
+              routerLink="/produtos">
+              <span slot="start">📦</span>
+              <ion-label>Todos os Produtos</ion-label>
+            </ion-item>
+          </ng-template>
+          <ng-container *ngIf="!splitPaneVisible || splitPaneDisabled; else myCart">
+            <ion-menu-toggle auto-hide="false">
+              <ion-item lines="none"
+                routerLink="/carrinho">
+                <span slot="start">🛒</span>
+                <ion-label>Meu Carrinho</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          </ng-container>
+          <ng-template #myCart>
+            <ion-item lines="none"
+              routerLink="/carrinho">
+              <span slot="start">🛒</span>
+              <ion-label>Meu Carrinho</ion-label>
+            </ion-item>
+          </ng-template>
+
+          <ion-menu-toggle auto-hide="false">
+            <ion-item lines="none"
+              routerLink="/produtos/ofertas">
+              <span slot="start">🔥</span>
+              <ion-label>Ofertas</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle auto-hide="false">
+            <ion-item lines="none"
+              routerLink="/produtos/marcas">
+              <span slot="start">🏷️</span>
+              <ion-label>Produtos por Marca</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle auto-hide="false"
+            *ngIf="authService.userIsAuthenticated | async">
+            <ion-item lines="none"
+              routerLink="usuario/pedidos">
+              <span slot="start">📃</span>
+              <ion-label>Meus Pedidos</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle auto-hide="false"
+            *ngIf="authService.userIsAuthenticated | async">
+            <ion-item lines="none"
+              routerLink="/usuario/enderecos">
+              <span slot="start">📌</span>
+              <ion-label>Meus Endereços</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle auto-hide="false"
+            *ngIf="authService.userIsAuthenticated | async">
+            <ion-item lines="none"
+              routerLink="/usuario/configuracoes">
+              <span slot="start">⚙️</span>
+              <ion-label>Minhas Configurações</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-item lines="none"
+            (click)="onLogout()"
+            *ngIf="authService.userIsAuthenticated | async"
+            button>
+            <ion-icon name="exit"
+              slot="start"></ion-icon>
+            <ion-label>Sair</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ion-menu>
+    <ion-router-outlet id="outlet"
+      main></ion-router-outlet>
+  </ion-split-pane>
+</ion-app>

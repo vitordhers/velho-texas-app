@@ -1,0 +1,219 @@
+<ion-toolbar color="tertiary">
+  <ion-grid class="ion-no-padding">
+    <ion-row>
+      <ion-col class="ion-no-padding"
+        size="6"
+        size-lg="3">
+        <ion-buttons>
+          <ion-menu-button menu="appMenu"></ion-menu-button>
+          <a routerLink="/">
+            <ion-img src="/assets/img/logo/vt-quick-logo-sm.png"
+              class="logo"></ion-img>
+          </a>
+        </ion-buttons>
+      </ion-col>
+      <ion-col [size]="authenticated ? 11 : 13"
+        size-lg="12"
+        offset-lg="2"
+        class="search-column">
+        <ion-item lines="none">
+          <ion-searchbar #searchbar
+            animated
+            class="ion-no-padding"
+            showCancelButton="focus"
+            [class.desktop]="platform.is('desktop')"
+            [placeholder]="placeholder()"
+            (search)="doSearch()"
+            (ionChange)="searchChange($event)"
+            (ionFocus)="show($event)"
+            (ionBlur)="hide()"
+            [value]="search[0] | async"></ion-searchbar>
+          <ion-button *ngIf="platform.is('desktop')"
+            color="primary"
+            fill="solid"
+            class="ion-no-margin"
+            (click)="doSearch()">
+            <ion-icon name="search-sharp"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-col>
+      <ion-col class="ion-no-padding"
+        [size]="authenticated ? 7 : 5"
+        size-lg="4">
+        <ion-toolbar>
+          <ion-buttons slot="end">
+            <ng-container *ngIf="authenticated">
+              <div class="hidden">
+                <div #notificationContent
+                  class="border-content">
+                  <ion-content appScrollbarTheme
+                    class="notification-wrapper">
+                    <ion-list slot="fixed"
+                      class="ion-no-padding"
+                      style="background-color: #fff; width: 98%">
+                      <ion-item lines="full">
+                        <h5>❗ Notificações</h5>
+                        <ion-button slot="end"
+                          color="medium"
+                          fill="clear"
+                          shape="round"
+                          (click)="hideTooltip('notifications')">
+                          <ion-icon name="close-circle"></ion-icon>
+                        </ion-button>
+                      </ion-item>
+                    </ion-list>
+
+                    <ion-list class="ion-no-padding notification-list">
+                      <ion-item lines="full"
+                        *ngFor="let notification of notifications"
+                        [button]="notification.url"
+                        [color]="notification.read ? '' : 'medium'"
+                        [routerLink]="notification.url"
+                        (click)="hideAll()">
+                        <p [innerHtml]="notification.text"></p>
+                      </ion-item>
+                    </ion-list>
+                    <ion-infinite-scroll threshold="100px"
+                      [disabled]="disableNotificationsLoader"
+                      (ionInfinite)="loadNotifications($event)">
+                      <ion-infinite-scroll-content loadingSpinner="default"
+                        loadingText="Guenta mão...">
+                      </ion-infinite-scroll-content>
+                    </ion-infinite-scroll>
+                  </ion-content>
+                </div>
+              </div>
+              <ion-button #notBtn
+                fill="clear"
+                color="primary"
+                shape="round"
+                (click)="popover(notBtn, notificationContent, 'notifications')">
+                <ion-icon name="alert-circle"></ion-icon>
+              </ion-button>
+              <ion-badge class="notifications"
+                color="danger"
+                *ngIf="notificationsTotal > 0">{{ notificationsTotal }}
+              </ion-badge>
+            </ng-container>
+            <ng-container>
+              <div class="hidden">
+                <div #cartContent
+                  class="border-content">
+                  <ion-list class="ion-no-padding">
+                    <ion-item lines="full"
+                      *ngIf="totalCartItems !== 0">
+                      <h5 slot="start"
+                        class="ion-no-margin">🛒 Carrinho</h5>
+                      <ion-label slot="end">
+                        <b>{{totalCartItems}}</b>{{(totalCartItems === 1) ? ' item no carrinho' : ' itens no carrinho'}}
+                      </ion-label>
+                      <ion-button slot="end"
+                        color="medium"
+                        fill="clear"
+                        shape="round"
+                        (click)="hideTooltip('cart')">
+                        <ion-icon name="close-circle"></ion-icon>
+                      </ion-button>
+                    </ion-item>
+                    <ion-item lines="full">
+                      <app-cart-content></app-cart-content>
+                    </ion-item>
+                    <ion-item *ngIf="totalCartItems !== 0"
+                      lines="none">
+                      <ion-toolbar slot="end"
+                        (click)="hideAll()">
+                        <ion-button slot="end"
+                          color="danger"
+                          shape="round"
+                          fill="clear"
+                          (click)="confirmEmptyCart()">
+                          🗑️ Esvaziar Carrinho
+                        </ion-button>
+                        <ion-button slot="end"
+                          shape="round"
+                          fill="clear"
+                          routerLink="/carrinho">🛒 Ver Carrinho</ion-button>
+                      </ion-toolbar>
+                    </ion-item>
+                  </ion-list>
+                </div>
+              </div>
+              <div [class.hidden]="cartIconDisabled">
+                <ion-button fill="clear"
+                  #cartBtn
+                  color="primary"
+                  shape="round"
+                  (click)="popover(cartBtn, cartContent, 'cart')">
+                  <ion-icon name="cart"></ion-icon>
+                </ion-button>
+                <ion-badge class="cart"
+                  color="success"
+                  *ngIf="totalCartItems > 0">{{ totalCartItems }}
+                </ion-badge>
+              </div>
+            </ng-container>
+            <ng-container>
+              <div class="hidden">
+                <div #userContent>
+                  <ion-list class="ion-no-padding">
+                    <ion-item lines="none"
+                      routerLink="/entrar">
+                      <span slot="start">🚪</span>
+                      <ion-label>Entrar </ion-label>
+                    </ion-item>
+                    <ion-item lines="none"
+                      routerLink="/registrar">
+                      <span slot="start">📝</span>
+                      <ion-label> Registrar</ion-label>
+                    </ion-item>
+                  </ion-list>
+                </div>
+              </div>
+              <ion-button fill="clear"
+                #userBtn
+                color="primary"
+                shape="round"
+                (click)="popover(userBtn, userContent, 'user')">
+                <ion-icon name="person-circle"></ion-icon>
+              </ion-button>
+            </ng-container>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-toolbar>
+<ion-row class="suggestions">
+  <ion-col [ngClass]="((!loadingProducts && products.length === 0) || !focused) ? 'fakehidden': ''"
+    size-lg="12"
+    offset-lg="5"
+    class="ion-no-padding free-column">
+    <ion-list class="absolute">
+      <ion-item *ngFor="let product of products"
+        [routerLink]="['/', 'produtos', product._id]"
+        lines="full"
+        button>
+        <ion-avatar slot="start">
+          <img [src]="'../../../../assets/img/products/' + product.brand + '/' + product._id + '/1.jpg'">
+        </ion-avatar> {{ product.productName }}
+        <span slot="end">{{ product.price | currency:'BRL'}}</span>
+      </ion-item>
+      <ion-item lines="full"
+        expand="full"
+        *ngIf="preSearchResults">
+        {{ preSearchResults === 1 ? preSearchResults + ' resultado' : preSearchResults + ' resultados' }}
+        <ion-button color="primary"
+          shape="round"
+          slot="end"
+          fill="clear"
+          (click)="doSearch()">Ver todos</ion-button>
+      </ion-item>
+      <ion-item [class.fakehidden]="!loadingProducts"
+        lines="none">
+        <ion-label slot="end">
+          <ion-spinner></ion-spinner> Guenta mão!
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-col>
+</ion-row>

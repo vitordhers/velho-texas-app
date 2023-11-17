@@ -1,0 +1,130 @@
+<ion-header *ngIf="platform.is('mobile')">
+  <ion-toolbar color="tertiary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>📌 Meus Endereços</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+
+    <ion-row *ngIf="!dataLoaded; else loadedData">
+      <ion-col size="24"
+        size-md="20"
+        offset-md="2">
+        <ion-list>
+          <ion-item lines="none">
+            <ion-icon name="pin"
+              slot="start"></ion-icon>
+            <ion-skeleton-text animated
+              style="width: 100%">
+            </ion-skeleton-text>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+    <ng-template #loadedData>
+      <ion-row *ngIf="addresses.length > 0; else noAddress">
+        <ion-col size="24"
+          size-md="20"
+          offset-md="2">
+          <ion-list *ngIf="addresses.length >= 1">
+            <ion-item-sliding #slidingEl
+              *ngFor="let addr of addresses">
+              <ion-item-options slot="end">
+                <ion-item-option color="primary"
+                  (click)="addressAddEdit(addr.addressId, slidingEl)">
+                  <ion-icon slot="top"
+                    name="create"></ion-icon>
+                  Editar
+                </ion-item-option>
+                <ion-item-option color="success"
+                  *ngIf="!addr.defaultAddress"
+                  (click)="updateDefaultAddress(addr.addressId, slidingEl)">
+                  <ion-icon slot="top"
+                    name="checkbox-outline"></ion-icon>
+                  Tornar Padrão
+                </ion-item-option>
+                <ion-item-option color="danger"
+                  *ngIf="!addr.defaultAddress"
+                  (click)="removeAddress(addr.addressId)">
+                  <ion-icon slot="top"
+                    name="trash"></ion-icon>
+                  Excluir
+                </ion-item-option>
+              </ion-item-options>
+              <ion-item>
+                <div slot="start"
+                  #div
+                  [element]="div"
+                  [content]="addr.defaultAddress?'Endereço Padrão' : 'Tornar Endereço Padrão'"
+                  appTippy>
+                  <ion-button shape="round"
+                    fill="clear"
+                    (click)="updateDefaultAddress(addr.addressId, slidingEl)"
+                    [ngClass]="{
+                      'avoid-clicks': addr.defaultAddress
+                    }">
+                    <ion-icon *ngIf="!addr.defaultAddress"
+                      name="square-outline"
+                      color="primary"></ion-icon>
+                    <ion-icon *ngIf="addr.defaultAddress"
+                      name="checkbox-outline"
+                      color="success"></ion-icon>
+                  </ion-button>
+                </div>
+                <ion-label>
+                  {{ addr.street }}, Nº {{ addr.no}} - {{ addr.city}}, {{ addr.state}}.
+                  CEP: {{ addr.postalCode}} .
+                  {{addr.addInfo ? 'Complemento: ' + addr.addInfo +'.': ''}}
+                </ion-label>
+                <ion-button slot="end"
+                  shape="round"
+                  size="small"
+                  fill="clear"
+                  (click)="slideItem(slidingEl, chevron)">
+                  <ion-icon #chevron
+                    name="chevron-back"></ion-icon>
+                </ion-button>
+              </ion-item>
+            </ion-item-sliding>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+      <ng-template #noAddress>
+        <ion-row>
+          <ion-col size="24"
+            size-md="16"
+            offset-md="4">
+            <h3>Você ainda não tem nenhum endereço registrado, sua raposa velha 🦊 !</h3>
+            <small class="ion-text-right"> Clique no botão abaixo para adicionar um endereço.</small>
+          </ion-col>
+        </ion-row>
+      </ng-template>
+    </ng-template>
+    <ion-row *ngIf="!mobile && 5 > addresses.length">
+      <ion-col size="24"
+        size-md="6"
+        offset-md="16">
+        <ion-button color="primary"
+          expand="block"
+          (click)="addressAddEdit()">
+          <ion-icon name="add"
+            slot="start"></ion-icon>
+          Adicionar novo Endereço
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-fab vertical="bottom"
+    horizontal="end"
+    edge="false"
+    slot="fixed"
+    *ngIf="mobile && 5 > addresses.length">
+    <ion-fab-button (click)="addressAddEdit()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

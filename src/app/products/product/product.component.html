@@ -1,0 +1,98 @@
+<ion-card class="ion-activatable"
+  [disabled]="0 >= product.skus.length || !dataLoaded"
+  (mouseenter)="hovered = true"
+  (mouseleave)="hovered = false">
+  <ion-card-header class="ion-activatable button"
+    [routerLink]="['/', 'produtos', product.productId]">
+    <ion-card-title>
+      <span #title
+        [ngClass]="{fakehidden: !dataLoaded}"
+        (mouseenter)="product.productName.length > maxTitleLength ? showTooltip(title, product.productName) : null"
+        (mouseleave)="product.productName.length > maxTitleLength ? hideTooltip() : null">
+        {{ (product.productName.length > maxTitleLength && devWidth > 576) ? (product.productName | slice:0:maxTitleLength-3)+'...' : product.productName }}
+      </span>
+      <ion-skeleton-text [ngClass]="{fakehidden: dataLoaded}"
+        style="width:100%"
+        animated></ion-skeleton-text>
+    </ion-card-title>
+    <ion-card-subtitle>
+      <div [ngClass]="{fakehidden: !dataLoaded}">
+        <ion-chip class="chip"
+          *ngFor="let tag of product.tags"
+          (click)="stopProp($event, tag)">
+          <ion-label color="dark"> {{ tag }}</ion-label>
+        </ion-chip>
+      </div>
+      <div [ngClass]="{fakehidden: dataLoaded}">
+        <ion-chip class="chip"
+          *ngFor="let a of [1,2,3]">
+          <ion-label color="dark">
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          </ion-label>
+        </ion-chip>
+      </div>
+    </ion-card-subtitle>
+    <div *ngIf="dataLoaded">
+      <div class="img-decoy"
+        [ngStyle]="{background: 'url(assets/img/products/'+  product.brand + '/' + product.productId +'/1.jpg)'}">
+        <ion-button fill="outline"
+          color="primary"
+          class="hoveredbutton"
+          *ngIf="hovered && devWidth >= 768 && (product.skus.length > inCart || !inCart)"
+          (click)="addItem($event)">
+          🛒 Adicionar
+        </ion-button>
+      </div>
+      <ion-ripple-effect></ion-ripple-effect>
+    </div>
+    <div [ngClass]="{fakehidden: dataLoaded}">
+      <div class="img-decoy">
+        <ion-thumbnail class="thumbnail">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-thumbnail>
+      </div>
+    </div>
+
+  </ion-card-header>
+  <ion-card-content>
+    <div class="ion-text-right">
+      <h2 class="price">
+        <ion-badge color="primary"
+          mode="ios">
+          {{ product.price | currency:'BRL' }}
+        </ion-badge>
+        /
+        <span [ngClass]="{fakehidden: !dataLoaded}">
+          {{ product.unit[0] | lowercase }}
+        </span>
+        <ion-skeleton-text animated
+          [ngClass]="{fakehidden: dataLoaded}"
+          style="width: 20%; display: inline-block"></ion-skeleton-text>
+      </h2>
+    </div>
+    <p [ngClass]="{fakehidden: !dataLoaded}">
+      {{ (product.description.length > 120 && !detailsShown) ? (product.description | slice:0:117)+' ...'  : product.description }}
+    </p>
+    <p [ngClass]="{fakehidden: dataLoaded}">
+      <ion-skeleton-text animated></ion-skeleton-text>
+      <ion-skeleton-text animated></ion-skeleton-text>
+      <ion-skeleton-text animated></ion-skeleton-text>
+    </p>
+  </ion-card-content>
+  <ion-toolbar class="ion-text-right"
+    class="toolbar">
+    <ion-buttons slot="secondary">
+      <ion-button fill="outline"
+        color="primary"
+        *ngIf="dataLoaded && 768 > devWidth && (product.skus.length > inCart || !inCart)"
+        (click)="addItem($event)">
+        🛒 Adicionar
+      </ion-button>
+      <ion-button fill="solid"
+        (click)="detailsShown = !detailsShown"
+        [disabled]="!dataLoaded">
+        🔍 {{(!detailsShown)? '+' : '-'}} detalhes
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-card>

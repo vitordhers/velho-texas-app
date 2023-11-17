@@ -1,0 +1,142 @@
+<ion-footer>
+  <ion-card color="primary"
+    class="ion-no-margin">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="24"
+          size-md="7"
+          offset-md="1">
+          <h2>🏜️ O Velho Texas</h2>
+          <ion-list class="ion-no-padding">
+            <ion-item lines="none"
+              color="primary"
+              class="ion-no-margin">
+              <p>🅰️🅾🅱🅰❗ Velho Texas é uma empresa de tabacaria e bebidas em Piracicaba, dedicada a oferecer a
+                experiência mais
+                consistente para quem deseja seguir o estilo country sertanejo.</p>
+            </ion-item>
+            <ion-item lines="none"
+              color="primary"
+              class="ion-no-margin">
+              <h5>🌿😗💦🔝SEJE AGRICOLÃO👨‍🌾🐮🍺🤠</h5>
+            </ion-item>
+            <ion-item lines="none"
+              color="primary"
+              class="ion-no-margin"
+              color="primary">
+              <ion-icon name="person"
+                slot="start"></ion-icon>
+              <p>
+                <b>Empresa registrada como Microempreendedor
+                  Individual</b>
+              </p>
+            </ion-item>
+            <ion-item lines="none"
+              color="primary"
+              class="ion-no-margin">
+              <ion-icon name="caret-forward"
+                slot="start"></ion-icon>
+              <p>
+                CNPJ: 37.221.503/0001-05
+              </p>
+            </ion-item>
+            <ion-item lines="none"
+              color="primary"
+              class="ion-no-margin">
+              <ion-icon name="map"
+                slot="start"></ion-icon>
+              <p>
+                Av. Dois Córregos, 1861 - Piracicaba, São Paulo. CEP 13420-835.
+              </p>
+            </ion-item>
+            <ion-item lines="none"
+              color="primary"
+              button>
+              <ion-icon name="document-text"
+                slot="start"></ion-icon>
+              <ion-label>Termos e Condições de Uso</ion-label>
+            </ion-item>
+            <ion-item lines="none"
+              color="primary"
+              button>
+              <ion-icon name="document-text"
+                slot="start"></ion-icon>
+              <ion-label>Política de Privacidade</ion-label>
+            </ion-item>
+          </ion-list>
+
+        </ion-col>
+        <ion-col size="24"
+          size-md="7"
+          offset-md="1">
+          <h2>📞 Contato</h2>
+
+          <ion-list class="ion-no-padding">
+            <ion-item lines="none"
+              color="primary">
+              <ion-button color="secondary"
+                shape="round"
+                size="default"
+                (click)="navigateExternalLink('mailto:dina@velho-texas.com')">
+                <ion-icon name="mail-outline"
+                  slot="start"></ion-icon> dina@velho-texas.com
+              </ion-button>
+            </ion-item>
+            <ion-item lines="none"
+              color="primary">
+              <ion-button color="success"
+                size="default"
+                shape="round"
+                (click)="navigateExternalLink('https://api.whatsapp.com/send?phone=5519991556016&text=AOBA!')">
+                <ion-icon name="logo-whatsapp"
+                  slot="start">
+                </ion-icon> (19) 99155-6016
+              </ion-button>
+            </ion-item>
+            <ion-item lines="none"
+              color="primary">
+              <ion-label>Se inscreva abaixo para receber Promoções e Novidades!</ion-label>
+            </ion-item>
+            <ion-item lines="none"
+              class="ion-no-padding ion-no-margin subscription"
+              color="primary">
+              <ion-input placeholder="E-mail ou Whatsapp"></ion-input>
+              <ion-button color="secondary"
+                shape="round"
+                class="ion-no-margin">Chambra!</ion-button>
+            </ion-item>
+          </ion-list>
+
+        </ion-col>
+        <ion-col soze="24"
+          size-md="7"
+          offset-md="1">
+          <h2>👉 Redes sociáveis</h2>
+          <ion-card-subtitle>Segue nóis! 🚶</ion-card-subtitle>
+          <ion-list class="ion-no-padding">
+            <ion-item lines="none"
+              color="primary"
+              (click)="navigateExternalLink('https://www.instagram.com/o.velho.texas/')"
+              button>
+              <ion-icon name="logo-instagram"
+                slot="start"></ion-icon>
+              <h3>
+                O Velho Texas 🏜️
+              </h3>
+            </ion-item>
+            <ion-item lines="none"
+              color="primary"
+              (click)="navigateExternalLink('https://www.instagram.com/raposaodebuzios/')"
+              button>
+              <ion-icon name="logo-instagram"
+                slot="start"></ion-icon>
+              <h3>
+                Raposão de Búzios 🦊
+              </h3>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card>
+</ion-footer>

@@ -1,0 +1,109 @@
+<ion-grid class="ion-no-padding">
+  <ion-row class="ion-text-center ion-no-padding"
+    *ngFor="let item of p.controls; let i = index">
+    <ion-col class="wrapper ion-no-padding"
+      size="4"
+      size-lg="4">
+      <ion-thumbnail class="ion-no-margin">
+        <img [src]="'assets/img/products/' + item.value.brand + '/' + item.value.productId + '/1.jpg'">
+      </ion-thumbnail>
+    </ion-col>
+    <ion-col size="20"
+      size-lg="10"
+      class="ion-text-left ion-no-padding ion-padding-top">
+      <p>{{ item.value.productName }}</p>
+    </ion-col>
+    <ion-col class="wrapper"
+      size="16"
+      size-lg="6">
+      <div>
+        <ion-button color="secondary"
+          size="small"
+          shape="round"
+          fill="solid"
+          (click)="removeCartItem(i)"
+          [disabled]="loaders.placingOrder">
+          <ion-icon name="close-sharp"></ion-icon>
+        </ion-button>
+      </div>
+      <div>
+        <ion-button [class.hidden]="1 >= item.value.quantity"
+          color="danger"
+          fill="solid"
+          shape="round"
+          size="small"
+          (click)="changeQuantity(i, 'decrement')"
+          [disabled]="loaders.placingOrder">
+          <ion-icon name="remove-sharp"></ion-icon>
+        </ion-button>
+      </div>
+      <div class="inputdiv"
+        [formGroup]="item">
+        <ion-label position="floating">
+          {{ item.value.quantity > 1 ? item.value.unit[1] :  item.value.unit[0] }}</ion-label>
+        <ion-input class="inputamount"
+          type="number"
+          formControlName="quantity"
+          appInputRestriction="integer"
+          appInputRestriction="noSpecialChars"
+          [value]="item.value.quantity"
+          [style.pointerEvents]="'none'"></ion-input>
+        <input type="hidden"
+          formControlName="productId"
+          readonly>
+        <input type="hidden"
+          formControlName="productName"
+          readonly>
+        <input type="hidden"
+          formControlName="unit"
+          readonly>
+        <input type="hidden"
+          formControlName="shippingWeight"
+          readonly>
+        <input type="hidden"
+          formControlName="price"
+          readonly>
+      </div>
+      <div>
+        <ion-button [class.hidden]="item.value.quantity >= availability[item.value.productId].quantity"
+          color="success"
+          fill="solid"
+          shape="round"
+          size="small"
+          (click)="changeQuantity(i, 'increment')"
+          [disabled]="loaders.placingOrder || item.value.quantity >= availability[item.value.productId].quantity">
+          <ion-icon name="add-sharp"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-col>
+    <ion-col size="8"
+      size-lg="4"
+      class="wrapper">
+      {{ item.value.price * item.value.quantity | currency:'BRL' }}
+    </ion-col>
+    <ion-col size="24"
+      size-lg="6"
+      offset-lg="14"
+      *ngIf="item.value.quantity >= availability[item.value.productId]">
+      <ion-note color="danger">máximo de {{ item.value.unit[1]}} no estoque!</ion-note>
+    </ion-col>
+  </ion-row>
+  <ion-row *ngIf=" p.controls.length > 0; else noItems">
+    <ion-col size="16"
+      size-lg="20"
+      class="ion-text-center">
+      <strong>Total:</strong>
+    </ion-col>
+    <ion-col size="8"
+      size-lg="4"
+      style="border-top: groove;">
+      <b>{{ totalProducts | currency:'BRL' }}</b>
+    </ion-col>
+  </ion-row>
+  <ng-template #noItems>
+    <h2>Seu carrinho está vazio, abutre! 🦅🦅🦅</h2>
+  </ng-template>
+  <ion-label color="danger"
+    *ngIf="form.get('products').touched && form.get('products').hasError('emptyProducts')">
+    😒 É necessário ter produtos no carrinho para prosseguir, Roy!</ion-label>
+</ion-grid>

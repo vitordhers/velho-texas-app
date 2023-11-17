@@ -1,0 +1,45 @@
+<ion-tabs *ngIf="platform.is('mobile'); else desktop"
+  #tabs
+  (ionTabsDidChange)="tabChange(tabs)">
+  <ion-tab-bar slot="bottom"
+    class="mobile">
+    <ion-tab-button tab="painel">
+      <ion-icon name="person"></ion-icon>
+    </ion-tab-button>
+    <ion-tab-button tab="pedidos">
+      <ion-icon name="list"></ion-icon>
+    </ion-tab-button>
+    <ion-tab-button tab="enderecos">
+      <ion-icon name="map"></ion-icon>
+    </ion-tab-button>
+    <ion-tab-button tab="configuracoes">
+      <ion-icon name="cog"></ion-icon>
+    </ion-tab-button>
+    <div class="ink-bar"
+      #inkbar></div>
+  </ion-tab-bar>
+</ion-tabs>
+
+<ng-template #desktop>
+  <ion-tabs #tabs
+    (ionTabsDidChange)="tabChange(tabs)">
+    <ion-tab-bar slot="top"
+      class="desktop"
+      color="tertiary">
+      <ion-tab-button tab="painel">
+        <h5>🌵Painel</h5>
+      </ion-tab-button>
+      <ion-tab-button tab="pedidos">
+        <h5>📃Pedidos</h5>
+      </ion-tab-button>
+      <ion-tab-button tab="enderecos">
+        <h5>📌Endereços</h5>
+      </ion-tab-button>
+      <ion-tab-button tab="configuracoes">
+        <h5>⚙️Configurações</h5>
+      </ion-tab-button>
+      <div class="ink-bar"
+        #inkbar></div>
+    </ion-tab-bar>
+  </ion-tabs>
+</ng-template>

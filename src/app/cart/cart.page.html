@@ -1,0 +1,620 @@
+<ion-content>
+  <form [formGroup]="form">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="24"
+          size-md="12">
+          <mat-expansion-panel expanded="true">
+            <mat-expansion-panel-header class="disable_ripple">
+              <mat-panel-title>
+                <h3>📜 Seu Pedido</h3>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <app-cart-content (cart)="populateCart($event)"></app-cart-content>
+          </mat-expansion-panel>
+        </ion-col>
+        <ion-col size="24"
+          size-md="12">
+          <mat-expansion-panel expanded="true">
+            <mat-expansion-panel-header class="disable_ripple">
+              <mat-panel-title>
+                <h3>📍 Entrega</h3>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ion-list *ngIf="(authService.userIsAuthenticated | async); else notLogged">
+              <ng-container *ngIf="addresses.length > 0; else noAddress">
+                <ion-item lines="none">
+                  <ion-icon name="pin"
+                    slot="start"
+                    style="color: #e44935;"></ion-icon>
+                  <ion-label color="danger"
+                    *ngIf="selectedAddressId == null">Selecione o Endereço de Entrega</ion-label>
+                  <ion-select okText="Confirmar"
+                    cancelText="Fechar"
+                    formControlName="selectedAddressId"
+                    [value]="selectedAddressId"
+                    style="max-width: 100%;">
+                    <ion-select-option *ngFor="let addr of addresses"
+                      value="{{ addr.addressId }}"
+                      [disabled]="disabledCeps.includes(addr.addressId)">
+                      {{ addr.street }}, Nº {{ addr.no}} - {{ addr.city}}, {{ addr.state}}.
+                      CEP: {{ addr.postalCode}} .
+                      {{addr.addInfo ? 'Complemento: ' + addr.addInfo +'.': ''}}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-item>
+                <small class="small-error"
+                  *ngIf="form.get('selectedAddressId').touched && form.get('selectedAddressId').hasError('required')">
+                  É necessário selecionar um endereço antes de fazer o pedido, Jesse!
+                </small>
+              </ng-container>
+              <ng-template #noAddress>
+                <ion-item class="noaddress"
+                  color="danger"
+                  lines="none">
+                  <h5>
+                    <ion-icon name="alert-circle"></ion-icon>
+                    Você ainda não possui nenhum endereço cadastrado, caubói!
+                  </h5>
+                </ion-item>
+              </ng-template>
+              <ion-button expand="block"
+                color="primary"
+                *ngIf="5 > addresses.length"
+                (click)="addressAdd()"
+                [disabled]="loaders.placingOrder">
+                <ion-icon name="add"></ion-icon>
+                Adicionar novo Endereço
+              </ion-button>
+              <small class="small-error"
+                *ngIf="form.get('selectedAddressId').touched && form.get('selectedAddressId').hasError('required')">
+                É necessário selecionar um endereço antes de fazer o pedido, Jesse!
+              </small>
+            </ion-list>
+            <ng-template #notLogged>
+              <ion-grid formGroupName="offlineAddress">
+                <ion-row>
+                  <ion-col size="24"
+                    size-md="12"
+                    class="ion-no-padding ion-padding-horizontal">
+                    <ion-list>
+                      <ion-item [ngClass]="{'ion-touched': form.get('offlineAddress.name').touched }">
+                        <ion-label position="floating">Nome</ion-label>
+                        <ion-input type="text"
+                          formControlName="name"
+                          maxlength="50"
+                          [disabled]="loaders.placingOrder"></ion-input>
+                      </ion-item>
+                      <span *ngIf="!form.get('offlineAddress.name').valid && form.get('offlineAddress.name').touched ">
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.name').hasError('required')">
+                          Esqueceu de colocar seu nome, Roy!
+                        </small>
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.name').hasError('minlength')">
+                          Seu nome deve ter pelo menos 4 letras, Roy!
+                        </small>
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.name').hasError('maxlength')">
+                          Seu nome não pode ter mais de 50 letras, Roy!
+                        </small>
+                      </span>
+                    </ion-list>
+                  </ion-col>
+                  <ion-col size="24"
+                    size-md="12"
+                    class="ion-no-padding ion-padding-horizontal">
+                    <ion-list>
+                      <ion-item [ngClass]="{'ion-touched': form.get('offlineAddress.email').touched }">
+                        <ion-label position="floating">📧 E-mail</ion-label>
+                        <ion-input type="email"
+                          formControlName="email"
+                          maxlength="30"
+                          [disabled]="loaders.placingOrder"></ion-input>
+                      </ion-item>
+                      <span
+                        *ngIf="!form.get('offlineAddress.email').valid && form.get('offlineAddress.email').touched ">
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.email').hasError('required')">
+                          Esqueceu de informar ao xerife o seu e-mail!
+                        </small>
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.email').hasError('email')">
+                          Este e-mail não parece ser válido, abutre!
+                        </small>
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.email').hasError('minlength')">
+                          Seu e-mail deve ter pelo menos 4 caracteres, Roy!
+                        </small>
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.email').hasError('maxlength')">
+                          Seu e-mail não pode ter mais de 30 caracteres, Roy!
+                        </small>
+                      </span>
+                    </ion-list>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="24"
+                    size-md="12"
+                    class="ion-no-padding ion-padding-horizontal">
+                    <small style="color: #535353">(😉 põe o só cep, sô, que nóis acha o endereço!)</small>
+                    <ion-list class="ion-no-padding">
+                      <ion-item [ngClass]="{'ion-touched': form.get('offlineAddress.postalCode').touched }">
+                        <ion-label position="floating">Cep</ion-label>
+                        <ion-input type="text"
+                          formControlName="postalCode"
+                          appCep
+                          maxlength="9"
+                          minlength="9"
+                          [disabled]="loaders.fetchingPostalCode || loaders.placingOrder"></ion-input>
+                      </ion-item>
+                      <span
+                        *ngIf="!form.get('offlineAddress.postalCode').valid && form.get('offlineAddress.postalCode').touched ">
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.postalCode').hasError('required') || form.get('offlineAddress.postalCode').hasError('minlength')
+                          || form.get('offlineAddress.postalCode').hasError('maxlength') || form.get('offlineAddress.postalCode').hasError('invalidCep')">
+                          Insira um CEP válido, abutre! 🦅
+                        </small>
+                      </span>
+                      <ion-item [ngClass]="{'ion-touched': form.get('offlineAddress.street').touched }">
+                        <ion-label position="floating">Rua</ion-label>
+                        <ion-input type="text"
+                          formControlName="street"
+                          maxlength="50"
+                          [disabled]="loaders.placingOrder"></ion-input>
+                        <ion-spinner *ngIf="loaders.fetchingPostalCode"
+                          slot="end"></ion-spinner>
+                      </ion-item>
+                      <span
+                        *ngIf="!form.get('offlineAddress.street').valid && form.get('offlineAddress.street').touched ">
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.street').hasError('required')">
+                          Você se esqueceu de informar sua rua, Roy!
+                        </small>
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.street').hasError('maxlength')">
+                          Insira menos que 50 caracteres, Roy!
+                        </small>
+                      </span>
+                      <ion-item [ngClass]="{'ion-touched': form.get('offlineAddress.no').touched }">
+                        <ion-label position="floating">Número</ion-label>
+                        <ion-input type="number"
+                          formControlName="no"
+                          min="0"
+                          [disabled]="loaders.placingOrder"></ion-input>
+                      </ion-item>
+                      <span *ngIf="!form.get('offlineAddress.no').valid && form.get('offlineAddress.no').touched ">
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.no').hasError('required')">
+                          Qual é o número deste rancho, caubói?
+                        </small>
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.no').hasError('min')">
+                          Ninguém mora no número 0, Jesse!
+                        </small>
+                      </span>
+                    </ion-list>
+                  </ion-col>
+                  <ion-col size="24"
+                    size-md="12"
+                    class="ion-no-padding ion-padding-horizontal">
+                    <ion-list class="ion-no-padding"
+                      style="margin-top: 20px;">
+                      <ion-item [ngClass]="{'ion-touched': form.get('offlineAddress.city').touched }">
+                        <ion-label position="floating">Cidade</ion-label>
+                        <ion-input type="text"
+                          formControlName="city"
+                          [disabled]="loaders.placingOrder"></ion-input>
+                        <ion-spinner *ngIf="loaders.fetchingPostalCode"
+                          slot="end"></ion-spinner>
+                      </ion-item>
+                      <span *ngIf="!form.get('offlineAddress.city').valid && form.get('offlineAddress.city').touched ">
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.city').hasError('required')">
+                          Ei, você esqueceu da sua velha cidade!
+                        </small>
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.city').hasError('maxlength')">
+                          No Texas, nenhuma cidade tem nome com mais de 70 caracteres!
+                        </small>
+                      </span>
+                      <ion-item [ngClass]="{'ion-touched': form.get('offlineAddress.state').touched }">
+                        <ion-label position="floating">Estado</ion-label>
+                        <ion-select placeholder="Escolha seu Estado, caubói!"
+                          formControlName="state"
+                          [disabled]="loaders.placingOrder">
+                          <ion-select-option value="AC">Acre </ion-select-option>
+                          <ion-select-option value="AL">Alagoas </ion-select-option>
+                          <ion-select-option value="AP">Amapá </ion-select-option>
+                          <ion-select-option value="AM">Amazonas </ion-select-option>
+                          <ion-select-option value="BA">Bahia </ion-select-option>
+                          <ion-select-option value="CE">Ceará </ion-select-option>
+                          <ion-select-option value="DF">Distrito Federal </ion-select-option>
+                          <ion-select-option value="ES">Espírito Santo </ion-select-option>
+                          <ion-select-option value="GO">Goiás </ion-select-option>
+                          <ion-select-option value="MA">Maranhão </ion-select-option>
+                          <ion-select-option value="MT">Mato Grosso </ion-select-option>
+                          <ion-select-option value="MS">Mato Grosso do Sul </ion-select-option>
+                          <ion-select-option value="MG">Minas Gerais </ion-select-option>
+                          <ion-select-option value="PA">Pará </ion-select-option>
+                          <ion-select-option value="PB">Paraíba </ion-select-option>
+                          <ion-select-option value="PR">Paraná </ion-select-option>
+                          <ion-select-option value="PE">Pernambuco </ion-select-option>
+                          <ion-select-option value="PI">Piauí </ion-select-option>
+                          <ion-select-option value="RJ">Rio de Janeiro </ion-select-option>
+                          <ion-select-option value="RN">Rio Grande do Norte </ion-select-option>
+                          <ion-select-option value="RS">Rio Grande do Sul </ion-select-option>
+                          <ion-select-option value="RO">Rondônia </ion-select-option>
+                          <ion-select-option value="RR">Roraima </ion-select-option>
+                          <ion-select-option value="SC">Santa Catatina </ion-select-option>
+                          <ion-select-option value="SP">São Paulo </ion-select-option>
+                          <ion-select-option value="SE">Sergipe </ion-select-option>
+                          <ion-select-option value="TO">Tocantins </ion-select-option>
+                        </ion-select>
+                        <ion-spinner *ngIf="loaders.fetchingPostalCode"
+                          slot="end"></ion-spinner>
+                      </ion-item>
+                      <span
+                        *ngIf="!form.get('offlineAddress.state').valid && form.get('offlineAddress.state').touched ">
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.state').hasError('required')">
+                          Boiadeiro, você se esqueceu do seu afamado Estado!
+                        </small>
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.state').hasError('maxlength')">
+                          🙉 Macacos me mordam, Big Johnson! Escolha um Estado da Lista!
+                        </small>
+                      </span>
+                      <ion-item>
+                        <ion-label position="floating">Complemento</ion-label>
+                        <ion-input type="text"
+                          formControlName="addInfo"
+                          [disabled]="loaders.placingOrder"></ion-input>
+                      </ion-item>
+                      <span
+                        *ngIf="!form.get('offlineAddress.addInfo').valid && form.get('offlineAddress.addInfo').touched ">
+                        <small class="small-error"
+                          *ngIf="form.get('offlineAddress.addInfo').hasError('maxlength')">
+                          🙉 Macacos me mordam, Big Johnson! Mais de 80 caracteres são muitos detalhes!
+                        </small>
+                      </span>
+                    </ion-list>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ng-template>
+            <ion-list>
+              <ion-radio-group formControlName="freightMode">
+                <ion-list-header>
+                  <ion-label>🚚 Forma de Envio</ion-label>
+                </ion-list-header>
+                <ion-item *ngIf="selectedAddressState !== 'SP'">
+                  <ion-radio slot="start"
+                    value="pac"
+                    checked></ion-radio>
+                  <ion-label>
+                    PAC
+                    <p *ngIf="freightOptions?.pac.eta">
+                      <ion-icon name="calendar-sharp"></ion-icon>
+                      {{
+                            (freightOptions.pac.eta[0] === freightOptions.pac.eta[0]) ? 
+                            'Seu pedido deve chegar até ' + freightOptions.pac.eta[0] +'.':
+                            'Seu pedido deve chegar entre' + freightOptions.pac.eta[0] +' e '+ freightOptions.pac.eta[0] +'.' 
+                          }}
+                    </p>
+                  </ion-label>
+                  <span slot="end"
+                    *ngIf="freightOptions?.pac.totalFreight">
+                    <b *ngIf="freightOptions.pac.totalFreight > 0; else pacSpinner">
+                      {{ freightOptions.pac.totalFreight | currency:'BRL' }}
+                    </b>
+                    <ng-template #pacSpinner>
+                      <ion-spinner slot="start"></ion-spinner>
+                    </ng-template>
+                  </span>
+                </ion-item>
+                <ion-item lines="none">
+                  <ion-radio slot="start"
+                    value="sedex"></ion-radio>
+                  <ion-label class="ion-text-wrap">
+                    Sedex
+                    <p *ngIf="freightOptions?.sedex.eta">
+                      <ion-icon name="calendar-sharp"></ion-icon>
+                      {{
+                        (freightOptions.sedex.eta[0] === freightOptions.sedex.eta[0]) ? 
+                        'Seu pedido deve chegar até ' + freightOptions.sedex.eta[0] +'.':
+                        'Seu pedido deve chegar entre' + freightOptions.sedex.eta[0] +' e '+ freightOptions.sedex.eta[0] +'.' 
+                      }}
+                    </p>
+                  </ion-label>
+                  <ng-container *ngIf="freightOptions?.sedex.totalFreight">
+                    <span *ngIf="freightOptions.sedex.totalFreight > 0; else sedexSpinner"
+                      slot="end">
+                      <b>
+                        {{ freightOptions.sedex.totalFreight | currency:'BRL' }}
+                      </b>
+                    </span>
+                    <ng-template #sedexSpinner>
+                      <ion-spinner slot="end"></ion-spinner>
+                    </ng-template>
+                  </ng-container>
+                </ion-item>
+              </ion-radio-group>
+            </ion-list>
+          </mat-expansion-panel>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="24"
+          size-md="12">
+          <mat-expansion-panel class="payment"
+            expanded="true">
+            <mat-expansion-panel-header class="disable_ripple">
+              <mat-panel-title>
+                <h3>💵 Pagamento</h3>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ion-list>
+              <ion-radio-group formControlName="paymentMethod">
+                <ion-item [disabled]="loaders.placingOrder">
+                  <ion-radio slot="start"
+                    value="boleto"
+                    checked></ion-radio>
+                  <ion-icon name="barcode"
+                    slot="start"></ion-icon>
+                  <ion-label>Boleto Bancário</ion-label>
+                </ion-item>
+                <ion-item [disabled]="iuguServiceDisabled || loaders.placingOrder">
+                  <ion-radio slot="start"
+                    value="creditCard"></ion-radio>
+                  <span slot="start">💳</span>
+                  <ion-label> Cartão de Crédito </ion-label>
+                  <ion-label color="danger"
+                    *ngIf="iuguServiceDisabled">Sistema de crédito indisponível</ion-label>
+                </ion-item>
+                <ion-item lines="none"
+                  [disabled]="loaders.placingOrder">
+                  <ion-label>Paypal</ion-label>
+                  <ion-radio slot="start"
+                    value="paypal"></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+              <ion-item *ngIf="form.get('paymentMethod').value === 'creditCard'"
+                lines="none">
+                <ion-grid class="ion-no-padding">
+                  <ion-row>
+                    <ion-col size="24"
+                      size-lg="14">
+                      <div #creditCard
+                        class="creditcard">
+                        <div #presentCard
+                          class="creditcardcolor genericCard">
+                          <div class="bannerlogo"
+                            #bannerLogo></div>
+                        </div>
+                        <div #nextCard
+                          class="creditcardcolor genericCard">
+                          <div class="bannerlogo"></div>
+                        </div>
+                        <div class="cardfront"
+                          #cardFront>
+                          <div class="ccard cardno"
+                            [style.font-size]=" this.form.get('card.cardNumber').value !== '' ? '14px':'20px'"
+                            [innerHTML]="(this.form.get('card.cardNumber').value || '**** **** **** ****') | creditFill:creditCardBanner">
+                          </div>
+                          <div class="ccardsub">
+                            <div class="ccard cardholder">
+                              {{ form.get('card.holderName').value || 'BIG JONHSON' }}
+                            </div>
+                            <div class="ccard carddue"
+                              [innerHTML]="( form.get('card.dueDate').value || today) | date: 'M/yy'">
+                            </div>
+                          </div>
+                          <img class="chip"
+                            src="../../assets/img/credit-cards/chip.png">
+                        </div>
+                        <div class="cardback"
+                          #cardBack>
+                          <div class="whitestrip"></div>
+                          <div class="magneticstrip"></div>
+                          <div class="cvv"
+                            #cvvDiv>{{ '*'.repeat(creditCardCVVLength) }}</div>
+                        </div>
+                      </div>
+                    </ion-col>
+                    <ion-col size="24"
+                      size-lg="10">
+                      <ion-list formGroupName="card">
+                        <ion-item [ngClass]="{'ion-touched': form.get('card.cardNumber').touched }">
+                          <ion-label position="floating">Número do Cartão
+                          </ion-label>
+                          <ion-input formControlName="cardNumber"
+                            appInputRestriction="integer"
+                            [appCreditCard]="creditCardBanner"
+                            [maxlength]="creditCardNoChunkLength"
+                            (ngModelChange)="creditCardNoChange($event)"
+                            [disabled]="loaders.placingOrder"></ion-input>
+                          <ion-icon slot="end"
+                            name="information-circle">
+                          </ion-icon>
+                          <!-- Bandeiras Aceitas: Mastercard, Visa, American Express, Amex, 
+                            Banes Card, Cabal, Coop, Diners Club, Discovery, Elo, Hipe, Hipercard, 
+                            JCB, Mais!, Soro Cred e UnionPay. -->
+                        </ion-item>
+                        <small class="small-error"
+                          *ngIf="form.get('card.cardNumber').touched && form.get('card.cardNumber').hasError('required')">
+                          Ei Roy, você se esqueceu do número do Cartão!
+                        </small>
+                        <small class="small-error"
+                          *ngIf="form.get('card.cardNumber').touched && form.get('card.cardNumber').hasError('cardNoLength') && creditCardBanner !== 'genericCard'">
+                          O Cartão de Crédito {{ creditCardBanner | titlecase}} deve ter {{ creditCardNoLength }}
+                          caracteres.
+                        </small>
+                        <small class="small-error"
+                          *ngIf="form.get('card.cardNumber').hasError('invalid') || form.get('card.cardNumber').hasError('luhn')">
+                          Este número de Cartão é inválido, sua raposa. 🦊
+                        </small>
+                        <ion-item [ngClass]="{'ion-touched': form.get('card.holderName').touched }">
+                          <ion-label position="floating">Nome no Cartão</ion-label>
+                          <ion-input formControlName="holderName"
+                            maxlength="22"
+                            appInputRestriction="noSpecialChars"
+                            oninput="this.value = this.value.toUpperCase()"
+                            [disabled]="loaders.placingOrder"></ion-input>
+                        </ion-item>
+                        <small class="small-error"
+                          *ngIf="form.get('card.holderName').touched && form.get('card.holderName').hasError('required')">
+                          Caubói, você se esqueceu de pôr o nome do Cartão!
+                        </small>
+                        <ion-item [ngClass]="{'ion-touched': form.get('card.dueDate').touched }">
+                          <ion-label position="floating">Data de Validade</ion-label>
+                          <ion-datetime [max]="dateLimit"
+                            [min]="nextMonth"
+                            doneText="Continuar"
+                            cancelText="Cancelar"
+                            [monthShortNames]="monthShortNames"
+                            displayFormat="MMM/YYYY"
+                            formControlName="dueDate"></ion-datetime>
+                        </ion-item>
+                        <small class="small-error"
+                          *ngIf="form.get('card.dueDate').touched && form.get('card.dueDate').hasError('required')">
+                          Este campo é obrigatório, Roy!
+                        </small>
+                        <ion-item [ngClass]="{'ion-touched': form.get('card.securityCode').touched }">
+                          <ion-label position="floating">Cód. de Segurança</ion-label>
+                          <ion-input #cvv
+                            type="password"
+                            formControlName="securityCode"
+                            maxlength="3"
+                            (ionFocus)="flipCreditCard($event)"
+                            (ionBlur)="flipCreditCard($event)"
+                            [disabled]="loaders.placingOrder"></ion-input>
+                        </ion-item>
+                        <small class="small-error"
+                          *ngIf="form.get('card.securityCode').touched && form.get('card.securityCode').hasError('required')">
+                          Este campo é obrigatório, Roy!
+                        </small>
+                      </ion-list>
+                      <ion-list>
+                        <ion-item *ngIf="form.get('paymentMethod').value === 'creditCard'"
+                          [ngClass]="{'ion-touched': form.get('cpf').touched }">
+                          <ion-label position="floating">CPF
+                          </ion-label>
+                          <ion-input formControlName="cpf"
+                            appCpf
+                            [disabled]="loaders.placingOrder"></ion-input>
+                        </ion-item>
+                        <small class="small-error"
+                          *ngIf="form.get('cpf').touched && form.get('cpf').hasError('required')">
+                          Este campo é obrigatório, Roy!
+                        </small>
+                      </ion-list>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-item>
+              <ion-item *ngIf="form.get('paymentMethod').value === 'boleto'"
+                lines="none">
+                <ion-list>
+                  <ion-item>
+                    <ion-label position="floating">CPF
+                    </ion-label>
+                    <ion-input formControlName="cpf"
+                      appCpf></ion-input>
+                  </ion-item>
+                  <small class="small-error"
+                    *ngIf="form.get('cpf').touched && form.get('cpf').hasError('required')">
+                    Este campo é obrigatório, Roy!
+                  </small>
+                </ion-list>
+              </ion-item>
+              <ion-item color="warning"
+                class="ion-margin"
+                lines="none"
+                *ngIf="form.get('paymentMethod').value === 'boleto'">
+                <h5>Seu <b>
+                    <ion-icon name="barcode"></ion-icon> Boleto Bancário
+                  </b> será gerado após a confirmação do Pedido!</h5>
+              </ion-item>
+            </ion-list>
+          </mat-expansion-panel>
+        </ion-col>
+        <ion-col size="24"
+          size-md="12">
+          <mat-expansion-panel expanded="true">
+            <mat-expansion-panel-header class="disable_ripple">
+              <mat-panel-title>
+                <h3>🤠 Confirmar</h3>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ion-list>
+              <ion-item lines="none">
+                <h4 slot="start"
+                  style="margin-top: 10px">📦</h4>
+                <h4 class="ion-no-margin">Produtos:</h4>
+                <b slot="end"
+                  *ngIf="totalProducts > 0; else noProducts">{{ totalProducts | currency:'BRL' }}</b>
+                <ng-template #noProducts>
+                  <ion-item slot="end"
+                    lines="none">{{ 0 | currency:'BRL' }}
+                  </ion-item>
+                </ng-template>
+              </ion-item>
+              <ion-item>
+                <h4 slot="start"
+                  style="margin-top: 10px">🚚</h4>
+                <h4 class="ion-no-margin"> Frete:</h4>
+
+                <b slot="end"
+                  *ngIf="totalFreight > 0; else calculatingFreight">{{ totalFreight | currency:'BRL' }}</b>
+                <ng-template #calculatingFreight>
+                  <ion-item slot="end"
+                    lines="none"
+                    *ngIf="totalFreight === 0; else noFreightYet">
+                    <ion-spinner slot="start"></ion-spinner>
+                  </ion-item>
+                  <ng-template #noFreightYet>
+                    <ion-item slot="end"
+                      lines="none"> {{ 0 | currency:'BRL' }}</ion-item>
+                  </ng-template>
+                </ng-template>
+              </ion-item>
+              <ion-item lines="none">
+                <h4 slot="start"
+                  style="margin-top: 10px">&nbsp;💲&nbsp;</h4>
+                <h4 class="ion-no-margin"> Total:</h4>
+                <b slot="end"
+                  *ngIf="totalOrder > 0; else calculatingTotal">{{ totalOrder | currency:'BRL' }}</b>
+                <ng-template #calculatingTotal>
+                  <ion-item slot="end"
+                    lines="none"
+                    *ngIf="totalOrder === 0; else noTotalYet">
+                    <ion-spinner slot="start"></ion-spinner>
+                  </ion-item>
+                  <ng-template #noTotalYet>
+                    <ion-item slot="end"
+                      lines="none"> {{ 0 | currency:'BRL' }}</ion-item>
+                  </ng-template>
+                </ng-template>
+              </ion-item>
+              <ion-item lines="none">
+                <ion-checkbox formControlName="legal"
+                  slot="start"></ion-checkbox>
+                <p>Eu declaro <b>sob penas da lei</b> que sou maior de 18 anos.</p>
+              </ion-item>
+              <ion-item lines="none"
+                *ngIf="form.get('legal').touched && form.get('legal').hasError('required')">
+                <small class="small-error">
+                  Este campo é obrigatório!
+                </small>
+              </ion-item>
+              <ion-button (click)="onSubmit()"
+                [disabled]="loaders.placingOrder">Confirmar Pedido!</ion-button>
+            </ion-list>
+          </mat-expansion-panel>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>

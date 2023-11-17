@@ -1,0 +1,68 @@
+ion-card {
+  height: 100%;
+  transition: 200ms;
+}
+
+ion-card:hover {
+  transform: scale3d(1.02, 1.02, 1);
+  transition: 200ms;
+}
+
+ion-chip {
+  font-size: 13px;
+}
+
+ion-card-header:focus {
+  outline: 0 !important;
+}
+
+.img-decoy {
+  min-height: 287.18px;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  position: relative;
+}
+
+.toolbar {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+}
+
+.button {
+  cursor: pointer;
+}
+
+.hoveredbutton {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+.chip {
+  margin: 4px 4px 4px 0px;
+}
+
+.hidden {
+  display: none;
+}
+
+ion-card-content {
+  padding-bottom: 56px;
+}
+
+.price {
+  font-size: 18px;
+
+  ion-badge {
+    font-size: 22px;
+
+    sup {
+      line-height: 2;
+    }
+  }
+}
+
+.thumbnail {
+  --size: 300px;
+}

@@ -1,0 +1,43 @@
+.wrapper {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  ion-button {
+    --padding-end: 4.5px;
+    --padding-start: 4.5px;
+  }
+}
+
+.inputdiv {
+  position: relative;
+  max-width: 75px;
+  padding-bottom: 3px;
+}
+
+.inputamount {
+  --placeholder-font-style: italic;
+  --placeholder-font-weight: 900;
+  --color: var(--ion-color-primary);
+  --background: var(--ion-color-secondary);
+  min-width: 52px;
+  border-radius: 6px;
+  --padding-bottom: 5px;
+  --padding-top: 4px;
+  --padding-end: 2px;
+  --padding-start: 2px;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+::ng-deep .item .sc-ion-label-md-h {
+  white-space: normal !important;
+  display: inline !important;
+}
+
+ion-grid {
+  max-height: 250px;
+  overflow-y: auto;
+}

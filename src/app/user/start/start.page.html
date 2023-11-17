@@ -1,0 +1,199 @@
+<ion-header *ngIf="platform.is('mobile')">
+  <ion-toolbar color="tertiary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>🌵 Painel</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row *ngIf="intro">
+      <ion-col size="24"
+        size-md="16"
+        offset-md="4"
+        class="ion-no-padding">
+        <h1>🅰🅾🅱🅰❗</h1>
+        <h3>Seja bem-vindo ao <b>Velho Texas</b>, quéubói! 🤠</h3>
+        <p>Nesse painel você consegue ver sua atividade recente e atualizar informações da sua conta!</p>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="24"
+        size-md="10"
+        offset-md="2"
+        class="ion-no-padding">
+        <ion-row>
+          <ion-col class="ion-no-padding">
+            <h3>📞 Informação de contato</h3>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="24"
+            size-md="6">🤠<b>Nome</b></ion-col>
+          <ion-col size="24"
+            size-md="18"
+            class="ion-no-padding">
+            <ion-skeleton-text animated
+              style="width: 100%"
+              *ngIf="dataLoaded === false; else name"></ion-skeleton-text>
+            <ng-template #name>
+              {{ userData.name }}
+            </ng-template>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="24"
+            size-md="6">📧 <b>E-mail</b></ion-col>
+          <ion-col size="24"
+            size-md="18"
+            class="ion-no-padding">
+            <ion-skeleton-text animated
+              style="width: 100%"
+              *ngIf="dataLoaded === false; else email"></ion-skeleton-text>
+            <ng-template #email>
+              {{ userData.email }}
+              <ion-icon name="checkmark-circle"
+                color="success"
+                *ngIf="userData.status === userStatus.REGISTERED_AND_CONFIRMED"></ion-icon>
+            </ng-template>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="24"
+            size-md="6">📱 <b>Telefone</b></ion-col>
+          <ion-col size="24"
+            size-md="18"
+            class="ion-no-padding">
+            <ion-skeleton-text animated
+              style="width: 50%"
+              *ngIf="dataLoaded === false; else celphone"></ion-skeleton-text>
+            <ng-template #celphone>
+              <span *ngIf="userData.celphoneNumber; else nocelphone">{{ userData.celphoneNumber }}</span>
+              <ng-template #nocelphone>
+                <span>Você não possui número registrado, Roy!</span>
+              </ng-template>
+            </ng-template>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="24"
+            size-md="6">
+            <ion-button size="small"
+              routerLink="/usuario/configuracoes">
+              <ion-icon name="create"
+                slot="start"></ion-icon>
+              Editar
+            </ion-button>
+          </ion-col>
+          <ion-col size="24"
+            size-md="18">
+            <ion-button size="small">
+              <ion-icon slot="start"
+                name="lock-closed"></ion-icon> Mudar senha
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <h3>📌 Endereço Padrão</h3>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="24"
+            class="ion-no-padding">
+            <ion-skeleton-text animated
+              style="width: 100%"
+              *ngIf="dataLoaded === false; else defaultAddress"></ion-skeleton-text>
+            <ng-template #defaultAddress>
+              <small *ngIf="userData.addresses.length === 1 || !(userData.addresses); else noaddress">
+                📍
+                {{userData.addresses[0].street}}, Nº {{ userData.addresses[0].no }}.
+                CEP:
+                {{ userData.addresses[0].postalCode}} - {{ userData.addresses[0].city }},
+                {{ userData.addresses[0].state }}.
+                <span *ngIf="userData.addresses[0].addInfo">
+                  {{ userData.addresses[0].addInfo }}
+                </span>
+              </small>
+              <ng-template #noaddress>Você não inda possui nenhum endereço cadastrado, boiadeiro!</ng-template>
+            </ng-template>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-button size="small"
+              routerLink="/usuario/enderecos">
+              <ion-icon name="create"
+                slot="start"></ion-icon>
+              Editar
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col class="ion-no-padding">
+            <h3>🎉 Promoções e novidades</h3>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="18"
+            class="ion-no-padding">
+            <p> Atualmente
+              <ion-skeleton-text animated
+                style="width: 100%"
+                *ngIf="dataLoaded === false; else promotion"></ion-skeleton-text>
+              <ng-template #promotion>
+                <span *ngIf="userData.communication; else nocomm">
+                  <span
+                    *ngIf="userData.communication.mailcomm === false && userData.communication.wppcomm === false; else comm1">
+                    você não está cadastrado para receber promoções, rapaiz!
+                  </span>
+                  <ng-template #comm1>
+                    <span
+                      *ngIf="userData.communication.mailcomm === true && userData.communication.wppcomm === false; else comm2">
+                      você está cadastrado para receber promoções por e-mail, Jesse!
+                    </span>
+                    <ng-template #comm2>
+                      <span
+                        *ngIf="userData.communication.mailcomm === false && userData.communication.wppcomm === true; else comm3">
+                        você está cadastrado para receber promoções por whatsapp, Jesse!
+                      </span>
+                      <ng-template #comm3>
+                        você está cadastrado para receber promoções por whatsapp e e-mail, Jesse!
+                      </ng-template>
+                    </ng-template>
+                  </ng-template>
+                </span>
+                <ng-template #nocomm>você não está cadastrado para receber promoções, Jesse!</ng-template>
+              </ng-template>
+            </p>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="24"
+            size-md="6">
+            <ion-button size="small"
+              routerLink="/usuario/configuracoes">
+              <ion-icon name="create"
+                slot="start"></ion-icon>
+              Editar
+            </ion-button>
+          </ion-col>
+          <ion-col size="24"
+            size-md="18">
+            <ion-button size="small"
+              (click)="unsubscribeAllNotifications()"
+              *ngIf="dataLoaded === true && 
+              (userData?.communication?.mailcomm !== false || 
+              userData?.communication?.wppcomm !== false)">
+              <ion-icon name="close"
+                slot="start"></ion-icon>
+              Cancelar qualquer recebimento
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

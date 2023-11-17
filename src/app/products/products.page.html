@@ -1,0 +1,503 @@
+<ion-content>
+  <ion-grid class="ion-no-padding">
+    <ion-row>
+      <ion-col size="24"
+        size-md="22"
+        offset-md="1"
+        class="ion-no-padding">
+        <mat-drawer-container #drawerContainer
+          class="example-container"
+          autosize>
+          <mat-drawer [mode]="devWidth > 576? 'side' : 'overlay'"
+            [opened]="devWidth > 576"
+            #drawer>
+            <ion-list>
+              <ion-item lines="none"
+                *ngIf="576 > devWidth || filters">
+                <h3>🌵 Filtros</h3>
+                <ion-button slot="end"
+                  shape="round"
+                  fill="clear"
+                  color="primary"
+                  (click)="drawer.toggle()"
+                  class="ion-hide-sm-up">
+                  <ion-icon name="close-circle"></ion-icon>
+                </ion-button>
+              </ion-item>
+              <ion-item lines="none"
+                style="font-size: 13px">
+                <span *ngIf="dataLoaded">{{(results === 1) ? '1 resultado' : results +' resultados' }}</span>
+                <ion-skeleton-text *ngIf="!dataLoaded"
+                  animated></ion-skeleton-text>
+              </ion-item>
+
+              <ng-container *ngIf="filters.pesquisa && filters.pesquisa.length">
+                <ion-item lines="none">
+                  <span slot="start">🔎 Pesquisa:</span>
+                  <div #btn>
+                    <ion-button slot="end"
+                      color="danger"
+                      size="small"
+                      shape="round"
+                      fill="clear"
+                      (click)="removeFilter('pesquisa')"
+                      (mouseenter)="tooltip(btn, 'removesearch', 'Remover filtro de Pesquisa')"
+                      (mouseleave)="hideTooltip('removesearch')">
+                      <ion-icon name="close"></ion-icon>
+                    </ion-button>
+                  </div>
+                </ion-item>
+                <ion-item lines="none">
+                  <i style="font-size: 18px;"> "{{ filters.pesquisa }}"</i>
+                </ion-item>
+              </ng-container>
+              <ng-container *ngIf="filters['categorias[]'] && filters['categorias[]'].length > 0">
+                <ion-item lines="none">
+                  <span slot="start">🗃️ Categorias:</span>
+                  <div #btn>
+                    <ion-button color="danger"
+                      size="small"
+                      shape="round"
+                      fill="clear"
+                      (click)="removeFilter('categorias[]')"
+                      (mouseenter)="tooltip(btn, 'removecategories', 'Remover filtro de Categorias')"
+                      (mouseleave)="hideTooltip('removecategories')">
+                      <ion-icon name="close"></ion-icon>
+                    </ion-button>
+                  </div>
+                </ion-item>
+                <ion-item lines="none">
+                  <span *ngFor="let category of filters['categorias[]']"
+                    #chip>
+                    <ion-chip (click)="removeFilter('categorias[]', category._id)"
+                      (mouseenter)="tooltip(chip, category.label, 'Remover filtro '+category.label)"
+                      (mouseleave)="hideTooltip(category._id)">
+                      {{ category.label }}
+                      <ion-icon name="close"></ion-icon>
+                    </ion-chip>
+                  </span>
+                </ion-item>
+              </ng-container>
+              <ng-container *ngIf="filters['precos[]'] && filters['precos[]'].length > 0">
+                <ion-item lines="none">
+                  <span slot="start">💵 Preços:</span>
+                  <div #btn
+                    slot="end">
+                    <ion-button color="danger"
+                      size="small"
+                      shape="round"
+                      fill="clear"
+                      (click)="removeFilter('precos[]')"
+                      (mouseenter)="tooltip(btn, 'removeprices', 'Remover filtro de Preço')"
+                      (mouseleave)="hideTooltip('removeprices')">
+                      <ion-icon name="close"></ion-icon>
+                    </ion-button>
+                  </div>
+                </ion-item>
+                <ion-item lines="none">
+                  <span *ngIf="filters['precos[]'][0] !== filters['precos[]'][1]">
+                    Entre {{ filters['precos[]'][0] |  currency:'BRL'}} e
+                    {{ filters['precos[]'][1] |  currency:'BRL'}}
+                  </span>
+                  <span *ngIf="filters['precos[]'][0] === filters['precos[]'][1]">
+                    {{ filters['precos[]'][0] |  currency:'BRL'}}
+                  </span>
+                </ion-item>
+              </ng-container>
+              <ng-container *ngIf="filters['marcas[]'] && filters['marcas[]'].length > 0">
+                <ion-item lines="none">
+                  <span slot="start">🏷️ Marcas:</span>
+                  <div #btn
+                    slot="end">
+                    <ion-button color="danger"
+                      size="small"
+                      shape="round"
+                      fill="clear"
+                      (click)="removeFilter('marcas[]')"
+                      (mouseenter)="tooltip(btn, 'removebrands', 'Remover filtros de Marcas')"
+                      (mouseleave)="hideTooltip('removebrands')">
+                      <ion-icon name="close"></ion-icon>
+                    </ion-button>
+                  </div>
+                </ion-item>
+                <div>
+                  <span *ngFor="let brand of filters['marcas[]']"
+                    #chip>
+                    <ion-chip (click)="removeFilter('marcas[]', brand._id)"
+                      (mouseenter)="tooltip(chip, brand._id, 'Remover filtro '+brand._id)"
+                      (mouseleave)="hideTooltip(brand._id)">
+                      {{ brand.label }}
+                      <ion-icon name="close"></ion-icon>
+                    </ion-chip>
+                  </span>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="filters['tags[]'] && filters['tags[]'].length > 0">
+                <ng-container *ngFor="let tag of filters['tags[]']">
+                  <ion-item lines="none">
+                    <span slot="start">{{ tag.label.split(" ")[1] }} {{ tag.label.split(" ")[0] }}:</span>
+                  </ion-item>
+                  <ion-item lines="none">
+                    <span #chip>
+                      <ion-chip (click)="removeFilter('tags[]', tag._id)"
+                        (mouseenter)="tooltip(chip, tag._id, 'Remover filtro '+tag._id)"
+                        (mouseleave)="hideTooltip(tag._id)">
+                        {{ tag._id }}
+                        <ion-icon name="close"></ion-icon>
+                      </ion-chip>
+                    </span>
+                  </ion-item>
+                </ng-container>
+              </ng-container>
+
+              <mat-expansion-panel *ngIf="!dataLoaded || (resultFilters.categories.length > 1)"
+                [disabled]="!dataLoaded"
+                expanded
+                (closed)="hideTooltip('categories')">
+                <mat-expansion-panel-header>
+                  <mat-panel-description>
+                    <mat-icon>🗃️</mat-icon>
+                  </mat-panel-description>
+                  <mat-panel-title>
+                    <h4>Categorias</h4>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ion-item lines="none"
+                  *ngIf="!dataLoaded; else loadedCategories">
+                  <ion-skeleton-text animated></ion-skeleton-text>
+                  <ion-skeleton-text animated></ion-skeleton-text>
+                </ion-item>
+                <ng-template #loadedCategories>
+                  <ng-container *ngIf="resultFilters.categories.length > 1">
+                    <div class="hidden">
+                      <div #categoriesContent
+                        (mouseenter)="tooltip(categoriesContent, 'categoriesContent', 'Aplicar Filtro de Categorias')"
+                        (mouseleave)="hideTooltip('categoriesContent')">
+                        <ion-button size="small"
+                          shape="round"
+                          fill="clear"
+                          trigger="hover"
+                          (click)="applyFilter('categorias[]', preFilters.categories)">
+                          <ion-icon name="checkmark-circle"
+                            color="success"></ion-icon>
+                        </ion-button>
+                      </div>
+                    </div>
+                    <div #categoriesHost>
+                      <ion-item *ngFor="let category of resultFilters.categories"
+                        lines="none"
+                        class="filter">
+                        <ion-checkbox
+                          (ionChange)="showPopover('categories', category._id, categoriesHost, categoriesContent, 'categories')">
+                        </ion-checkbox>
+                        <ion-label>&nbsp;{{ category.label }} </ion-label>
+                        <span> ({{ category.quantity }})</span>
+                      </ion-item>
+                    </div>
+                  </ng-container>
+                </ng-template>
+              </mat-expansion-panel>
+
+              <mat-expansion-panel *ngIf="!dataLoaded || resultFilters.prices.lower !== resultFilters.prices.upper"
+                [disabled]="!dataLoaded"
+                expanded
+                (closed)="hideTooltip('prices')">
+                <mat-expansion-panel-header>
+                  <mat-panel-description>
+                    <mat-icon>💵</mat-icon>
+                  </mat-panel-description>
+                  <mat-panel-title>
+                    <h4>Preço</h4>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ion-item lines="none"
+                  *ngIf="!dataLoaded; else loadedPrices">
+                  <ion-skeleton-text animated></ion-skeleton-text>
+                </ion-item>
+                <ng-template #loadedPrices>
+                  <ng-container *ngIf="resultFilters.prices.lower !== resultFilters.prices.upper">
+                    <div class="hidden">
+                      <div #pricesContent>
+                        <ion-button size="small"
+                          shape="round"
+                          fill="clear"
+                          trigger="hover"
+                          (click)="applyFilter('precos[]', [knobValues.lower, knobValues.upper])"
+                          (mouseenter)="tooltip(pricesContent, 'pricesContent', 'Aplicar Filtro de Preços')"
+                          (mouseleave)="hideTooltip('pricesContent')">
+                          <ion-icon name="checkmark-circle"
+                            color="success"></ion-icon>
+                        </ion-button>
+                      </div>
+                    </div>
+                    <div #pricesHost>
+                      <ion-item lines="none">
+                        <span style="font-size: 12px;">💲</span>
+                        <ion-range [max]="resultFilters.prices.upper"
+                          [min]="resultFilters.prices.lower"
+                          dual-knobs
+                          pin
+                          color="primary"
+                          [(ngModel)]="knobValues"
+                          (ionChange)="showPopover('prices', knobValues, pricesHost, pricesContent, 'prices')">
+                        </ion-range>
+                        <span style="font-size: 18px;">💲</span>
+                      </ion-item>
+                    </div>
+                  </ng-container>
+                </ng-template>
+              </mat-expansion-panel>
+
+              <mat-expansion-panel *ngIf="!dataLoaded || (resultFilters.brands.length > 1)"
+                [disabled]="!dataLoaded"
+                expanded
+                (closed)="hideTooltip('brands')">
+                <mat-expansion-panel-header>
+                  <mat-panel-description>
+                    <mat-icon>🏷️</mat-icon>
+                  </mat-panel-description>
+                  <mat-panel-title>
+                    <h4>Marcas</h4>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ion-item lines="none"
+                  *ngIf="!dataLoaded; else loadedBrands">
+                  <ion-skeleton-text animated></ion-skeleton-text>
+                  <ion-skeleton-text animated></ion-skeleton-text>
+                </ion-item>
+                <ng-template #loadedBrands>
+                  <ng-container *ngIf="resultFilters.brands.length > 1">
+                    <div class="hidden">
+                      <div #brandsContent>
+                        <ion-button size="small"
+                          shape="round"
+                          fill="clear"
+                          (click)="applyFilter('marcas[]', preFilters.brands)"
+                          (mouseenter)="tooltip(brandsContent, 'brandsContent', 'Aplicar Filtro de Marcas')"
+                          (mouseleave)="hideTooltip('brandsContent')">
+                          <ion-icon name="checkmark-circle"
+                            color="success"></ion-icon>
+                        </ion-button>
+                      </div>
+                    </div>
+                    <div #brandsHost>
+                      <ion-item *ngFor="let brand of resultFilters.brands"
+                        lines="none"
+                        class="filter">
+                        <ion-checkbox
+                          (ionChange)="showPopover('brands', brand._id, brandsHost, brandsContent, 'brands')">
+                        </ion-checkbox>
+                        <ion-label>&nbsp;{{ brand.label }}</ion-label>
+                        <span>({{ brand.quantity }})</span>
+                      </ion-item>
+                    </div>
+                  </ng-container>
+                </ng-template>
+              </mat-expansion-panel>
+
+              <ng-container *ngIf="dataLoaded && (resultFilters.tags.length > 1)">
+                <ng-container *ngFor="let tag of resultFilters.tags">
+                  <mat-expansion-panel *ngIf="tag.filters.length > 1"
+                    expanded
+                    (closed)="hideTooltip(tag.label)">
+                    <mat-expansion-panel-header>
+                      <mat-panel-description>
+                        <mat-icon>{{tag.label.split(" ")[1]}}</mat-icon>
+                      </mat-panel-description>
+                      <mat-panel-title>
+                        <h4>{{tag.label.split(" ")[0]}}</h4>
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <div class="hidden">
+                      <div #tagsContent>
+                        <ion-button size="small"
+                          shape="round"
+                          fill="clear"
+                          trigger="hover"
+                          (click)="applyFilter('tags[]', preFilters.tags)"
+                          (mouseenter)="tooltip(tagsContent, 'apply_'+tag.label, 'Aplicar Filtro de '+tag.label)"
+                          (mouseleave)="hideTooltip('brandsContent')">
+                          <ion-icon name="checkmark-circle"
+                            color="success"></ion-icon>
+                        </ion-button>
+                      </div>
+                    </div>
+                    <div #tagsHost>
+                      <ion-chip *ngFor="let filter of tag.filters"
+                        class="ion-text-wrap"
+                        [color]="preFiltersControls.tags[filter.label] ? 'primary'  : '' "
+                        (click)="showPopover('tags', [filter.label, tag.label], tagsHost, tagsContent, tag.label)">
+                        <ion-icon name="checkmark-circle"
+                          color="primary"
+                          *ngIf="preFiltersControls.tags[filter.label]"></ion-icon>
+                        &nbsp;
+                        {{ filter.label }}
+                        ({{ filter.quantity }})
+                      </ion-chip>
+                    </div>
+                  </mat-expansion-panel>
+                </ng-container>
+              </ng-container>
+            </ion-list>
+          </mat-drawer>
+          <mat-drawer-content>
+            <ion-grid class="ion-no-padding">
+              <ion-row *ngIf="!dataLoaded; else loadedData">
+                <ion-col size="8"
+                  offset="8">
+                  <div class="fullcontent">
+                    <h1>
+                      <ion-spinner></ion-spinner> Guenta mão...
+                    </h1>
+                  </div>
+                </ion-col>
+              </ion-row>
+              <ng-template #loadedData>
+                <ng-container *ngIf="loadedProducts.length > 0; else noResults">
+                  <ion-row>
+                    <ion-col>
+                      <ion-toolbar>
+                        <ion-buttons slot="end">
+                          <ion-button shape="round"
+                            color="primary"
+                            fill="clear"
+                            [matMenuTriggerFor]="limit">
+                            <ion-icon name="layers"></ion-icon> {{ currentLimit }} Resultados
+                          </ion-button>
+                          <mat-menu #limit="matMenu">
+                            <button mat-menu-item
+                              [ngClass]="{'menuSelected' : currentLimit === 12}"
+                              (click)="adjustLimit(12)">
+                              Mostar 12 resultados
+                            </button>
+                            <button mat-menu-item
+                              [ngClass]="{'menuSelected' : currentLimit === 18}"
+                              (click)="adjustLimit(18)">
+                              Mostar 18 resultados
+                            </button>
+                            <button mat-menu-item
+                              [ngClass]="{'menuSelected' : currentLimit === 24}"
+                              (click)="adjustLimit(24)">
+                              Mostar 24 resultados
+                            </button>
+                          </mat-menu>
+                          <ion-button shape="round"
+                            color="primary"
+                            fill="clear"
+                            (click)="toggleDisplayList()">
+                            <ion-icon [name]="displayList? 'list':'grid'"></ion-icon>
+                          </ion-button>
+                          <ion-button shape="round"
+                            color="primary"
+                            fill="clear"
+                            [matMenuTriggerFor]="menu">
+                            <ion-icon name="filter-sharp">
+                            </ion-icon>
+                          </ion-button>
+                          <mat-menu #menu="matMenu">
+                            <button [ngClass]="{'menuSelected' : sorting === 'relevance'}"
+                              (click)="sortResults('relevance')"
+                              mat-menu-item>
+                              <ion-icon name="star"></ion-icon> Relevância
+                            </button>
+                            <button [ngClass]="{'menuSelected' : sorting === 'smaller'}"
+                              (click)="sortResults('smaller')"
+                              mat-menu-item>
+                              <ion-icon name="filter-sharp"
+                                style="transform: rotate(180deg)">
+                              </ion-icon> Menor Preço
+                            </button>
+                            <button [ngClass]="{'menuSelected' : sorting === 'bigger'}"
+                              (click)="sortResults('bigger')"
+                              mat-menu-item>
+                              <ion-icon name="filter-sharp">
+                              </ion-icon> Maior Preço
+                            </button>
+                          </mat-menu>
+                          <ion-button class="ion-hide-md-up"
+                            color="primary"
+                            shape="round"
+                            fill="clear"
+                            (click)="drawer.toggle()">
+                            <ion-icon name="funnel"></ion-icon>
+                          </ion-button>
+                        </ion-buttons>
+                      </ion-toolbar>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row *ngIf="displayList !== true">
+                    <ion-col *ngFor="let product of loadedProducts"
+                      size="24"
+                      size-sm="12"
+                      size-md="8"
+                      class="ion-margin-bottom">
+                      <app-product [product]="product"
+                        [devWidth]="devWidth"
+                        [inCart]="inCart[product.productId]"
+                        [maxTitleLength]="26"
+                        [dataLoaded]="dataLoaded"
+                        (tagEvent)="stopProp($event)"
+                        (addToCart)="addToCart($event)"></app-product>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row *ngIf="displayList === true">
+                    <ion-col class="ion-text-center"
+                      size="24">
+                      <ion-list>
+                        <ion-item *ngFor="let product of loadedProducts"
+                          [routerLink]="['/', 'produtos', product.productId]"
+                          detail>
+                          <ion-thumbnail slot="start">
+                            <ion-img [src]="'assets/img/'+ product.productId+'/1.jpg'"></ion-img>
+                          </ion-thumbnail>
+                          <ion-label>
+                            <h2>{{ product.productName }}</h2>
+                            <p>{{ product.description }}</p>
+                          </ion-label>
+                        </ion-item>
+                      </ion-list>
+                    </ion-col>
+                  </ion-row>
+                  <ion-infinite-scroll threshold="350px"
+                    [disabled]="disableLoader"
+                    (ionInfinite)="loadResults($event)">
+                    <ion-infinite-scroll-content loadingSpinner="default"
+                      loadingText="Guenta mão...">
+                    </ion-infinite-scroll-content>
+                  </ion-infinite-scroll>
+                  <ion-row>
+                    <ion-col size="24"
+                      size-sm="12"
+                      size-md="12"
+                      offset-md="8">
+                      <h4 *ngIf="disableLoader">🥴 Tem mais resultado não, sô!</h4>
+                    </ion-col>
+                  </ion-row>
+                </ng-container>
+              </ng-template>
+              <ng-template #noResults>
+                <ion-row>
+                  <ion-col size="24"
+                    size-sm="12"
+                    size-md="12"
+                    offset-md="4">
+                    <div class="fullcontent"
+                      class="ion-text-center">
+                      <h2>Macacos🙊 me mordam!</h2>
+                      <h4>Não achamos nenhum produto com esses filtros, Roy!</h4>
+                      <ion-button color="primary"
+                        fill="solid"
+                        expand="block"
+                        (click)="removeFilter()">🧹 Limpar Filtros</ion-button>
+                    </div>
+                  </ion-col>
+                </ion-row>
+              </ng-template>
+            </ion-grid>
+          </mat-drawer-content>
+        </mat-drawer-container>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

@@ -1,0 +1,268 @@
+<ion-header *ngIf="platform.is('mobile')">
+  <ion-toolbar color="tertiary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title color="primary"
+      style="font-weight: 600;">📃 Meus Pedidos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list class="ion-no-padding"
+    *ngIf="!dataLoaded; else loadedData">
+    <ion-item *ngFor=" let item of arrayOne(2);"
+      lines="full"
+      detail>
+      <ion-grid class="ion-no-padding">
+        <ion-row>
+          <ion-col size="24"
+            size-md="6"
+            class="ion-no-padding">
+            <ion-list class="ion-no-padding">
+              <ion-item lines="none">
+                <span slot="start">📃</span>
+                <ion-skeleton-text animated
+                  style="width: 100%"></ion-skeleton-text>
+              </ion-item>
+              <ion-item lines="none">
+                <span slot="start">📆</span>
+                <ion-skeleton-text animated
+                  style="width: 100%"></ion-skeleton-text>
+              </ion-item>
+              <ion-item lines="none">
+                <span slot="start">&nbsp;💲&nbsp;</span>
+                <ion-skeleton-text animated
+                  style="width: 100%"></ion-skeleton-text>
+              </ion-item>
+            </ion-list>
+          </ion-col>
+          <ion-col size="24"
+            size-md="10"
+            class="ion-no-padding">
+            <ion-list class="ion-no-padding">
+              <ion-item lines="none">
+                <span slot="start">📍</span>
+                <ion-skeleton-text animated
+                  style="width: 100%"></ion-skeleton-text>
+              </ion-item>
+              <ion-item lines="none">
+                <span slot="start">🏷️ </span>
+                <ion-skeleton-text animated
+                  style="width: 100%"></ion-skeleton-text>
+              </ion-item>
+            </ion-list>
+          </ion-col>
+          <ion-col size="24"
+            size-md="8"
+            class="ion-no-padding">
+            <ion-list class="ion-no-padding">
+              <ion-item lines="none">
+                <ion-skeleton-text animated
+                  style="width: 100%"></ion-skeleton-text>
+              </ion-item>
+              <ion-item lines="none">
+                <ion-skeleton-text animated
+                  style="width: 100%"></ion-skeleton-text>
+              </ion-item>
+            </ion-list>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+  </ion-list>
+  <ng-template #loadedData>
+    <ion-list class="ion-no-padding"
+      *ngIf="loadedOrders.length > 0">
+      <ion-item *ngFor="let order of loadedOrders"
+        (click)="OrderView(order.orderNo, true)"
+        lines="full"
+        button
+        detail>
+        <ion-grid class="ion-no-padding">
+          <ion-row>
+            <ion-col size="24"
+              size-md="6"
+              class="ion-no-padding">
+              <ion-list class="ion-no-padding">
+                <ion-item lines="none">
+                  <span slot="start">📃</span>
+                  <h4 class="ion-no-margin"> Pedido Nº
+                    <b>{{ order.orderNo }}</b>
+                  </h4>
+                </ion-item>
+                <ion-item lines="none">
+                  <span slot="start">📆</span>
+                  <h4 class="ion-no-margin">
+                    {{ order.date | date: 'dd/MM/yyyy' }}
+                  </h4>
+                </ion-item>
+                <ion-item lines="none">
+                  <span slot="start">&nbsp;💲&nbsp;</span>
+                  <h4 class="ion-no-margin">
+                    <b>{{ order.charges.totalProducts + order.charges.totalShipment | currency:'BRL'}}</b>
+                  </h4>
+                </ion-item>
+
+              </ion-list>
+            </ion-col>
+            <ion-col size="24"
+              size-md="10"
+              class="ion-no-padding">
+              <ion-list class="ion-no-padding">
+                <ion-item lines="none">
+                  <span slot="start">📍</span>
+                  <p class="ion-no-margin ion-margin-top address">
+                    <span>{{ (order.freight.address.street.length > 34) ? (order.freight.address.street | slice:0:34 ) + '...' :order.freight.address.street }}</span>,
+                    <span>{{ order.freight.address.no }}</span>
+                    <span *ngIf="order.freight.address.addInfo"> - {{ order.freight.address.addInfo }}</span>.
+                    <br>
+                    <span>Via {{ order.freight.freightMode | titlecase}}.</span>
+                  </p>
+                </ion-item>
+                <ion-item lines="none">
+                  <span slot="start">🏷️ </span>
+                  <p class="ion-no-margin"
+                    [ngClass]="order.description.length > 51 ? 'ion-margin-top': ''">
+                    {{ (order.description.length > 135 ) ? (order.description | slice:0:135 ) + '..., etc' : order.description}}
+                  </p>
+                </ion-item>
+              </ion-list>
+            </ion-col>
+            <ion-col size="24"
+              size-md="8"
+              class="ion-no-padding">
+              <ion-list class="ion-no-padding">
+                <ion-item lines="none">
+                  <ng-container *ngIf="order.status === orderStatus.EXPIRED_BANK_SLIP; else elseChip0">
+                    <ion-icon name="time"
+                      slot="start"
+                      color="warning"></ion-icon>
+                    <ion-label>Boleto expirado.
+                    </ion-label>
+                  </ng-container>
+                  <ng-template #elseChip0>
+                    <ng-container *ngIf="order.status === orderStatus.FAILED_PAYMENT; else elseChip1">
+                      <ion-icon name="alert-circle"
+                        slot="start"
+                        color="danger"></ion-icon>
+                      <ion-label>💳 Pagamento sem
+                        sucesso.</ion-label>
+                    </ng-container>
+                    <ng-template #elseChip1>
+                      <ng-container *ngIf="order.status === orderStatus.PENDING_PAYMENT; else elseChip2">
+                        <ion-icon name="alert-circle"
+                          slot="start"
+                          color="warning"></ion-icon>
+                        <ion-label>Pagamento do
+                          boleto pendente.</ion-label>
+                      </ng-container>
+                      <ng-template #elseChip2>
+                        <ng-container *ngIf="order.status === orderStatus.PENDING_SHIPPING; else elseChip3">
+                          <ion-icon name="time"
+                            slot="start"
+                            color="success"></ion-icon>
+                          <span #span1
+                            [element]="span1"
+                            content="Por favor, aguarde enquanto fazemos a postagem."
+                            appTippy>
+                            <ion-label>
+                              Envio Pendente.</ion-label>
+                          </span>
+                        </ng-container>
+                        <ng-template #elseChip3>
+                          <ng-container *ngIf="order.status === orderStatus.PENDING_DELIVERY; else elseChip4">
+                            <ion-icon name="time"
+                              slot="start"
+                              color="success"></ion-icon>
+                            <ion-label>
+                              Produto Postado.</ion-label>
+                          </ng-container>
+                          <ng-template #elseChip4>
+                            <ng-container *ngIf="order.status === orderStatus.FINISHED; else elseChip5">
+                              <ion-icon slot="start"
+                                name="checkmark-circle"
+                                color="success"></ion-icon>
+                              <ion-label>Produto Entregue.
+                              </ion-label>
+                            </ng-container>
+                            <ng-template #elseChip5>
+                              <ng-container *ngIf="order.status === orderStatus.REFUNDED_PAYMENT; else elseChip6">
+                                <ion-icon name="arrow-round-back"
+                                  slot="start"
+                                  color="success"></ion-icon>
+                                <ion-label>Pagamento Devolvido.
+                                </ion-label>
+                              </ng-container>
+                              <ng-template #elseChip6>
+                                <ng-container *ngIf="order.status === orderStatus.CANCELED">
+                                  <ion-icon name="close-circle"
+                                    slot="start"
+                                    color="success"></ion-icon>
+                                  <ion-label>Pedido Cancelado.
+                                  </ion-label>
+                                </ng-container>
+                              </ng-template>
+                            </ng-template>
+                          </ng-template>
+                        </ng-template>
+                      </ng-template>
+                    </ng-template>
+                  </ng-template>
+                </ion-item>
+                <ion-item *ngIf="order.status === orderStatus.EXPIRED_BANK_SLIP"
+                  lines="none">
+                  <ion-chip color="warning"
+                    outline>
+                    <ion-icon name="barcode"></ion-icon>
+                    <ion-label>Reemitir boleto</ion-label>
+                  </ion-chip>
+                </ion-item>
+                <ion-item *ngIf="order.status === orderStatus.FAILED_PAYMENT"
+                  lines="none">
+                  <ion-chip color="warning"
+                    outline>
+                    <span> 💳 </span>
+                    <ion-label>Tentar Pagar Novamente</ion-label>
+                  </ion-chip>
+                </ion-item>
+                <ion-item *ngIf="order.status === orderStatus.PENDING_PAYMENT"
+                  lines="none">
+                  <ion-chip color="success"
+                    (click)="navigateExternalLink(order.charges.charge.link)"
+                    outline>
+                    <ion-icon name="barcode"></ion-icon>
+                    <ion-label>Pagar Boleto</ion-label>
+                  </ion-chip>
+                </ion-item>
+                <ion-item *ngIf="order.status === orderStatus.PENDING_DELIVERY 
+                || order.status === orderStatus.FINISHED"
+                  lines="none">
+                  <ion-chip color="success"
+                    outline
+                    (click)="navigateExternalLink('https://rastreamentocorreios.info/consulta/' + order.freight.mailTrakingCode)">
+                    <ion-icon name="pin"></ion-icon>
+                    <ion-label>Rastrear a Entrega</ion-label>
+                  </ion-chip>
+                </ion-item>
+              </ion-list>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+      <ion-infinite-scroll threshold="350px"
+        [disabled]="disableLoader"
+        (ionInfinite)="loadResults($event)">
+        <ion-infinite-scroll-content loadingSpinner="default"
+          loadingText="Guenta mão...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </ion-list>
+    <ion-list *ngIf="loadedOrders.length === 0">
+      <ion-item lines="none">
+        <h3>Você ainda não tem nenhum pedido, sua raposa velha cheia de truques 🦊🦊🦊 !</h3>
+      </ion-item>
+    </ion-list>
+  </ng-template>
+
+</ion-content>

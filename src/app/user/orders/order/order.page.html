@@ -1,0 +1,117 @@
+<ion-content>
+  <ion-grid>
+    <ion-row>
+
+      <ion-col size="24"
+        size-md="12"
+        offset-md="6"
+        *ngIf="loadedData">
+        <form [formGroup]="form"
+          *ngIf="user?.status === userStatus.REGISTERED_BY_ORDER && !hidePasswordCard">
+          <ion-card>
+            <ion-card-header color="primary">
+              <ion-card-subtitle>Você pode ser uma raposa velha cheia de truques 🦊, <b>mas ainda não tem uma senha</b>.
+              </ion-card-subtitle>
+              <ion-card-title>🤠Fique conhecido no Velho Texas!</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-grid>
+                <ion-row>
+                  <ion-col>
+                    <p>Crie uma senha para poder acessar seu pedido no futuro.</p>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    <ion-list>
+                      <ion-item lines="none">
+                        <p>Receber promoções e novidades</p>
+                        <span slot="start">📢</span>
+                        <ion-checkbox slot="start"
+                          formControlName="promo"></ion-checkbox>
+                      </ion-item>
+                    </ion-list>
+                  </ion-col>
+                </ion-row>
+                <ion-row formGroupName="passwords">
+                  <ion-col size="24"
+                    size-md="8">
+                    <ion-list>
+                      <ion-item [ngClass]="{'ion-touched': form.get('passwords.password').touched }">
+                        <ion-label position="floating">🔒 Senha</ion-label>
+                        <ion-input [type]="passwordType"
+                          clearOnEdit="false"
+                          formControlName="password"
+                          minlength="6"
+                          maxlength="30">
+                        </ion-input>
+                        <ion-icon slot="end"
+                          [name]="passwordIcon"
+                          class="passwordIcon"
+                          (click)='hideShowPassword()'></ion-icon>
+                      </ion-item>
+                      <ng-container
+                        *ngIf="!form.get('passwords.password').valid && form.get('passwords.password').touched">
+                        <ng-container *ngFor="let error of fields.password.errors | keyvalue">
+                          <small class="small-error"
+                            *ngIf="form.get('passwords.password').hasError(error.key)">
+                            {{ error.value }}
+                          </small>
+                        </ng-container>
+                      </ng-container>
+                    </ion-list>
+                  </ion-col>
+                  <ion-col size="24"
+                    size-md="8">
+                    <ion-list>
+                      <ion-item [ngClass]="{'ion-touched': form.get('passwords.cpassword').touched }">
+                        <ion-label position="floating">🔐 Repita a Senha</ion-label>
+                        <ion-input type="password"
+                          clearOnEdit="false"
+                          formControlName="cpassword"
+                          maxlength="30">
+                        </ion-input>
+                      </ion-item>
+                      <ng-container
+                        *ngIf="!form.get('passwords.cpassword').valid && form.get('passwords.cpassword').touched">
+                        <ng-container *ngFor="let error of fields.cpassword.errors | keyvalue">
+                          <small class="small-error"
+                            *ngIf="form.get('passwords.cpassword').hasError(error.key)">
+                            {{ error.value }}
+                          </small>
+                        </ng-container>
+                      </ng-container>
+                    </ion-list>
+                  </ion-col>
+                  <ion-col size="24"
+                    size-md="8">
+                    <ion-list class="ion-padding-top">
+                      <ion-button color="primary"
+                        fill="solid"
+                        expand="block"
+                        (click)="savePassword()"
+                        [disabled]="savingPassword">Salvar senha</ion-button>
+                    </ion-list>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-card-content>
+          </ion-card>
+        </form>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="24"
+        size-md="12"
+        offset-md="6">
+        <app-view-order *ngIf="loadedData; else loading"
+          [selectedOrder]="selectedOrder"
+          [modal]="false"
+          [token]="token"></app-view-order>
+        <ng-template #loading>
+          <ion-spinner></ion-spinner> Guenta mão...
+        </ng-template>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

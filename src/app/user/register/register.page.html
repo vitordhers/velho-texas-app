@@ -1,0 +1,315 @@
+<ion-header>
+  <ion-toolbar color="tertiary">
+    <ion-buttons slot="start">
+      <ion-back-button *ngIf="platform.is('mobile'); else menu"></ion-back-button>
+      <ng-template #menu>
+        <ion-menu-button></ion-menu-button>
+      </ng-template>
+    </ion-buttons>
+    <ion-title>Registre-se, cowboy!</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form">
+    <ion-grid fixed>
+
+      <ion-row>
+        <ion-col size="24"
+          size-md="8"
+          offset-md="4">
+          <ion-list>
+            <ion-item [ngClass]="{'ion-touched': form.get('name').touched }">
+              <ion-label position="floating"> 🤠 Nome</ion-label>
+              <ion-input #name
+                type="text"
+                formControlName="name"
+                maxlength="50"></ion-input>
+            </ion-item>
+            <ng-container *ngIf="!form.get('name').valid && form.get('name').touched">
+              <ng-container *ngFor="let error of fields.name.errors| keyvalue">
+                <small class="small-error"
+                  *ngIf="form.get('name').hasError(error.key)">
+                  {{ error.value }}
+                </small>
+              </ng-container>
+            </ng-container>
+          </ion-list>
+        </ion-col>
+
+        <ion-col size="24"
+          size-md="8">
+          <ion-list>
+            <ion-item [ngClass]="{'ion-touched': form.get('email').touched }">
+              <ion-label position="floating">📧 E-mail</ion-label>
+              <ion-input type="email"
+                formControlName="email"
+                maxlength="30"></ion-input>
+            </ion-item>
+            <ng-container *ngIf="!form.get('email').valid && (form.get('email').touched || form.get('email').dirty)">
+              <ng-container *ngFor="let error of fields.email.errors | keyvalue">
+                <small class="small-error"
+                  *ngIf="form.get('email').hasError(error.key)">
+                  {{ error.value }}
+                </small>
+              </ng-container>
+            </ng-container>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+
+      <ion-row formGroupName="passwords">
+        <ion-col size="24"
+          size-md="8"
+          offset-md="4">
+          <ion-list>
+            <ion-item [ngClass]="{'ion-touched': form.get('passwords.password').touched }">
+              <ion-label position="floating">🔒 Senha</ion-label>
+              <ion-input [type]="passwordType"
+                clearOnEdit="false"
+                formControlName="password"
+                minlength="6"
+                maxlength="30">
+              </ion-input>
+              <ion-icon slot="end"
+                [name]="passwordIcon"
+                class="passwordIcon"
+                (click)='hideShowPassword()'></ion-icon>
+            </ion-item>
+            <ng-container *ngIf="!form.get('passwords.password').valid && form.get('passwords.password').touched">
+              <ng-container *ngFor="let error of fields.password.errors | keyvalue">
+                <small class="small-error"
+                  *ngIf="form.get('passwords.password').hasError(error.key)">
+                  {{ error.value }}
+                </small>
+              </ng-container>
+            </ng-container>
+          </ion-list>
+        </ion-col>
+        <ion-col size="24"
+          size-md="8">
+          <ion-list>
+            <ion-item [ngClass]="{'ion-touched': form.get('passwords.cpassword').touched }">
+              <ion-label position="floating">🔐 Repita a Senha</ion-label>
+              <ion-input type="password"
+                clearOnEdit="false"
+                formControlName="cpassword"
+                maxlength="30">
+              </ion-input>
+            </ion-item>
+            <ng-container *ngIf="!form.get('passwords.cpassword').valid && form.get('passwords.cpassword').touched">
+              <ng-container *ngFor="let error of fields.cpassword.errors | keyvalue">
+                <small class="small-error"
+                  *ngIf="form.get('passwords.cpassword').hasError(error.key)">
+                  {{ error.value }}
+                </small>
+              </ng-container>
+            </ng-container>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="24"
+          size-md="8"
+          offset-md="4">
+          <ion-list>
+            <ion-item [ngClass]="{'ion-touched': form.get('celphoneNumber').touched }">
+              <ion-label position="floating">📱 Celular</ion-label>
+              <ion-input type="text"
+                formControlName="celphoneNumber"
+                appCellphoneBr
+                maxlength="15"></ion-input>
+            </ion-item>
+          </ion-list>
+          <ng-container *ngIf="!form.get('celphoneNumber').valid && form.get('celphoneNumber').touched ">
+            <ng-container *ngFor="let error of fields.celphoneNumber.errors| keyvalue">
+              <small class="small-error"
+                *ngIf="form.get('celphoneNumber').hasError(error.key)">
+                {{ error.value }}
+              </small>
+            </ng-container>
+          </ng-container>
+        </ion-col>
+        <ion-col size="24"
+          size-md="8">
+          <ion-list>
+            <ion-item lines="none"
+              *ngIf="form.get('celphoneNumber').valid && form.get('celphoneNumber').value !== ''">
+              <ion-label>Esse número tem Whatsapp</ion-label>
+              <ion-icon class="wpp"
+                name="logo-whatsapp"
+                slot="start"></ion-icon>
+              <ion-checkbox slot="start"
+                formControlName="whatsapp"
+                checked="{{ !form.get('celphoneNumber').valid || form.get('celphoneNumber').value === '' ? false : false }}">
+              </ion-checkbox>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="24"
+          size-md="16"
+          offset-md="4">
+          <ion-list>
+            <ion-item [ngClass]="{'ion-touched': form.get('birthday').touched }"
+              *ngIf="platform.is('mobile'); else materialdatepicker">
+              <ion-label>🥳 Data de Nascimento</ion-label>
+              <ion-datetime displayFormat="DD/MMM/YYYY"
+                placeholder="Escolha a data"
+                [max]="today"
+                doneText="Continuar"
+                cancelText="Cancelar"
+                [monthShortNames]="monthShortNames"
+                formControlName="birthday"></ion-datetime>
+            </ion-item>
+            <ng-template #materialdatepicker>
+              <ion-item lines="none">
+                <mat-form-field (click)="picker.open()"
+                  style="width: 100%;">
+                  <ion-label>🥳 Data de Nascimento</ion-label>
+                  <input matInput
+                    [matDatepicker]="picker"
+                    formControlName="birthday"
+                    [max]="today"
+                    [min]="minDate"
+                    style="text-align: right;"
+                    readonly>
+                  <mat-datepicker-toggle matSuffix
+                    [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker
+                    disabled="false"></mat-datepicker>
+                </mat-form-field>
+              </ion-item>
+            </ng-template>
+            <span *ngIf="!form.get('birthday').valid && form.get('birthday').touched ">
+              <small class="small-error"
+                *ngIf="form.get('birthday').hasError('required')">
+                Esqueceu de informar ao xerife sua idade, raposa velha! 🦊
+              </small>
+              <div *ngIf="form.get('birthday').hasError('ageRange')">
+                <ion-title class="small-error">Não aceitamos registro de usuários menores de 18 anos.</ion-title>
+                <p><b>Exigimos dos Correios que entreguem as encomendas <i>APENAS</i> para
+                    <i>MAIORES DE 18 ANOS.</i></b></p>
+                <p>Caso deseje burlar essa verificação, lembre-se que você pode estar cometendo crime:</p>
+
+                <p>
+                  <b>DECRETO-LEI No 2.848, DE 7 DE DEZEMBRO DE 1940.</b><br> <br>
+                  <strong>Código Penal</strong> <br> <br>
+                  Falsa identidade <br> <br>
+                  <b>Art. 307</b> - Atribuir-se ou atribuir a terceiro falsa identidade para obter vantagem, em proveito
+                  próprio
+                  ou alheio, ou para causar dano a outrem: <br> <br>
+                  <span class="small-error">Pena - detenção, de três meses a um ano, ou multa, se o fato não constitui
+                    elemento de crime mais grave.</span>
+                </p>
+
+                <small class="small-error"
+                  *ngIf="form.get('celphoneNumber').hasError('minlength')">
+                  Esse número parece ser do Wyoming, mas não do Velho Texas
+                </small>
+              </div>
+            </span>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="24"
+          size-md="16"
+          offset-md="4">
+          <ion-list>
+            <ion-item lines="none">
+              <p>Receber promoções e novidades</p>
+              <span slot="start">📢</span>
+              <ion-checkbox slot="start"
+                formControlName="promo"></ion-checkbox>
+            </ion-item>
+            <ion-item-group class="ion-padding-start"
+              *ngIf="form.get('promo').value === true"
+              formGroupName="communication">
+              <ng-container *ngFor="let error of fields.communication.errors | keyvalue">
+                <small class="small-error"
+                  *ngIf="form.get('communication').hasError(error.key)">
+                  {{ error.value }}
+                </small>
+              </ng-container>
+              <ion-item lines="none">
+                <ion-label> por E-mail</ion-label>
+                <ion-icon name="mail"
+                  slot="start"></ion-icon>
+                <ion-checkbox slot="start"
+                  formControlName="mailcomm"
+                  [disabled]="form.get('whatsapp').value === false"
+                  checked="{{ (form.get('whatsapp').value === false || !form.get('celphoneNumber').valid || form.get('celphoneNumber').value === '') && form.get('promo').value === true ? true : '' }}">
+                </ion-checkbox>
+              </ion-item>
+              <ion-item lines="none"
+                *ngIf="(form.get('celphoneNumber').valid && form.get('celphoneNumber').value !== '')  
+              && form.get('whatsapp').value === true">
+                <ion-label>por Whatsapp</ion-label>
+                <ion-icon class="wpp"
+                  name="logo-whatsapp"
+                  slot="start"></ion-icon>
+                <ion-checkbox slot="start"
+                  formControlName="wppcomm"
+                  checked="{{ !form.get('celphoneNumber').valid 
+                  || form.get('celphoneNumber').value === '' 
+                  || form.get('whatsapp').value === false ? false : false }}"></ion-checkbox>
+              </ion-item>
+            </ion-item-group>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="24"
+          size-md="16"
+          offset-md="4">
+          <ion-list>
+            <ion-item-divider>
+            </ion-item-divider>
+            <ng-container *ngFor="let error of fields.terms.errors | keyvalue">
+              <small class="small-error"
+                *ngIf="form.get('terms').hasError(error.key) && form.get('terms').touched">
+                {{ error.value }}
+              </small>
+            </ng-container>
+            <ion-item lines="none"
+              [ngClass]="{'ion-touched': form.get('terms').touched }">
+              <p>Li e concordo com os <a>Termos de Uso</a> e com a <a>Política de Privacidade</a> da plataforma</p>
+              <span slot="start">📄</span>
+              <ion-checkbox slot="start"
+                formControlName="terms"></ion-checkbox>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="24"
+          size-md="8"
+          offset-md="8">
+          <ion-list>
+            <ion-button type="button"
+              type="submit"
+              fill="solid"
+              color="tertiary"
+              expand="block"
+              (click)="presentLoading()"
+              (click)="invisible.execute()"
+              [disabled]="loading">
+              Finalizar Cadastro
+            </ion-button>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <re-captcha size="invisible"
+      #invisible
+      (resolved)="onSubmit($event)"></re-captcha>
+    <input type="hidden"
+      formControlName="recaptcha">
+  </form>
+</ion-content>

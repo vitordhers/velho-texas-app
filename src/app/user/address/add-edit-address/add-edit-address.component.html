@@ -1,0 +1,173 @@
+<form [formGroup]="form">
+  <ion-toolbar color="primary">
+    <ion-title>🗺️ {{ isEmpty(selectedAddress) ? 'Insira um novo' : 'Altere seu' }} endereço</ion-title>
+    <ion-button slot="end"
+      (click)="onCloseModal('cancel')"
+      fill="clear">
+      <ion-icon name="close"
+        class="close"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="24"
+        size-md="12"
+        class="ion-no-padding ion-padding-horizontal">
+        <small style="color: #535353">(põe o só cep, sô, que nóis acha o endereço!)</small>
+        <ion-list class="ion-no-padding">
+          <ion-item>
+            <ion-label position="floating">Cep</ion-label>
+            <ion-input type="text"
+              formControlName="postalCode"
+              appCep
+              maxlength="9"
+              minlength="9"></ion-input>
+          </ion-item>
+          <span *ngIf="!form.get('postalCode').valid && form.get('postalCode').touched ">
+            <small class="small-error"
+              *ngIf="form.get('postalCode').hasError('required') || form.get('postalCode').hasError('minlength')
+              || form.get('postalCode').hasError('maxlength') || form.get('postalCode').hasError('invalidCep')">
+              Insira um CEP válido, abutre! 🦅
+            </small>
+          </span>
+          <ion-item>
+            <ion-label position="floating">Rua</ion-label>
+            <ion-input type="text"
+              formControlName="street"
+              maxlength="50"></ion-input>
+          </ion-item>
+          <span *ngIf="!form.get('street').valid && form.get('street').touched ">
+            <small class="small-error"
+              *ngIf="form.get('street').hasError('required')">
+              Você se esqueceu de informar sua Rua, Roy!
+            </small>
+            <small class="small-error"
+              *ngIf="form.get('street').hasError('maxlength')">
+              Insira menos que 50 caracteres, Roy!
+            </small>
+          </span>
+          <ion-item>
+            <ion-label position="floating">Número</ion-label>
+            <ion-input type="number"
+              formControlName="no"
+              min="0"></ion-input>
+          </ion-item>
+          <span *ngIf="!form.get('no').valid && form.get('no').touched ">
+            <small class="small-error"
+              *ngIf="form.get('no').hasError('required')">
+              Qual é o número deste rancho, caubói?
+            </small>
+            <small class="small-error"
+              *ngIf="form.get('no').hasError('min')">
+              Ninguém mora no número 0, Jesse!
+            </small>
+          </span>
+        </ion-list>
+      </ion-col>
+      <ion-col size="24"
+        size-md="12"
+        class="ion-no-padding ion-padding-horizontal">
+        <ion-list class="ion-no-padding"
+          style="margin-top: 18px;">
+          <ion-item>
+            <ion-label position="floating">Cidade</ion-label>
+            <ion-input type="text"
+              formControlName="city"></ion-input>
+          </ion-item>
+          <span *ngIf="!form.get('city').valid && form.get('city').touched ">
+            <small class="small-error"
+              *ngIf="form.get('city').hasError('required')">
+              Ei, você esqueceu da sua velha cidade!
+            </small>
+            <small class="small-error"
+              *ngIf="form.get('city').hasError('maxlength')">
+              No Texas, nenhuma cidade tem nome com mais de 70 caracteres!
+            </small>
+          </span>
+          <ion-item>
+            <ion-label position="floating">Estado</ion-label>
+            <ion-select placeholder="Escolha seu Estado, caubói!"
+              formControlName="state">
+              <ion-select-option value="AC">Acre </ion-select-option>
+              <ion-select-option value="AL">Alagoas </ion-select-option>
+              <ion-select-option value="AP">Amapá </ion-select-option>
+              <ion-select-option value="AM">Amazonas </ion-select-option>
+              <ion-select-option value="BA">Bahia </ion-select-option>
+              <ion-select-option value="CE">Ceará </ion-select-option>
+              <ion-select-option value="DF">Distrito Federal </ion-select-option>
+              <ion-select-option value="ES">Espírito Santo </ion-select-option>
+              <ion-select-option value="GO">Goiás </ion-select-option>
+              <ion-select-option value="MA">Maranhão </ion-select-option>
+              <ion-select-option value="MT">Mato Grosso </ion-select-option>
+              <ion-select-option value="MS">Mato Grosso do Sul </ion-select-option>
+              <ion-select-option value="MG">Minas Gerais </ion-select-option>
+              <ion-select-option value="PA">Pará </ion-select-option>
+              <ion-select-option value="PB">Paraíba </ion-select-option>
+              <ion-select-option value="PR">Paraná </ion-select-option>
+              <ion-select-option value="PE">Pernambuco </ion-select-option>
+              <ion-select-option value="PI">Piauí </ion-select-option>
+              <ion-select-option value="RJ">Rio de Janeiro </ion-select-option>
+              <ion-select-option value="RN">Rio Grande do Norte </ion-select-option>
+              <ion-select-option value="RS">Rio Grande do Sul </ion-select-option>
+              <ion-select-option value="RO">Rondônia </ion-select-option>
+              <ion-select-option value="RR">Roraima </ion-select-option>
+              <ion-select-option value="SC">Santa Catatina </ion-select-option>
+              <ion-select-option value="SP">São Paulo </ion-select-option>
+              <ion-select-option value="SE">Sergipe </ion-select-option>
+              <ion-select-option value="TO">Tocantins </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <span *ngIf="!form.get('state').valid && form.get('state').touched ">
+            <small class="small-error"
+              *ngIf="form.get('state').hasError('required')">
+              Boiadeiro, você se esqueceu do seu afamado Estado!
+            </small>
+            <small class="small-error"
+              *ngIf="form.get('state').hasError('maxlength')">
+              🙉 Macacos me mordam, Big Johnson! Escolha um Estado da Lista!
+            </small>
+          </span>
+          <ion-item>
+            <ion-label position="floating">Complemento</ion-label>
+            <ion-input type="text"
+              formControlName="addInfo"></ion-input>
+          </ion-item>
+          <span *ngIf="!form.get('addInfo').valid && form.get('addInfo').touched ">
+            <small class="small-error"
+              *ngIf="form.get('addInfo').hasError('maxlength')">
+              🙉 Macacos me mordam, Big Johnson! Mais de 80 caracteres são muitos detalhes!
+            </small>
+          </span>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="24"
+        size-md="8"
+        offset-md="16">
+        <ion-button type="button"
+          color="danger"
+          expand="block"
+          (click)="onCloseModal('cancel')">
+          <ion-icon name="close"
+            slot="start"></ion-icon>Cancelar
+        </ion-button>
+        <ion-button type="submit"
+          [disabled]="!form.valid"
+          color="primary"
+          expand="block"
+          (click)="onCloseModal('confirm')"
+          [disabled]="isLoading">
+          <span *ngIf="!isLoading">
+            <ion-icon name="{{addressId !== undefined ? 'refresh' : 'add' }}"
+              slot="start"></ion-icon> {{ addressId !== undefined ?  "Atualizar Endereço" : "Salvar Endereço" }}
+          </span>
+          <ion-item *ngIf="isLoading"
+            color="primary">
+            <ion-spinner slot="start"></ion-spinner> {{ addressId !== undefined ?  "Atualizando..." : "Salvando..." }}
+          </ion-item>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</form>

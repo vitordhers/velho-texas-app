@@ -1,0 +1,296 @@
+<ion-header *ngIf="modal">
+  <ion-toolbar class="ion-padding-horizontal"
+    color="primary">
+    <ion-title class="ion-no-padding"> 🧾 Pedido No. {{ selectedOrder.orderNo}}</ion-title>
+    <ion-card-subtitle color="secondary">📅{{ selectedOrder.date | date: 'dd/MM/yy'}} - 🕑
+      {{ selectedOrder.date | date: 'HH:mm'}}</ion-card-subtitle>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()"
+        shape="round">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<h2>🔍 Detalhes do Pedido</h2>
+<ion-list>
+  <ion-item lines="none">
+    <span *ngIf="selectedOrder.status === orderStatus.FAILED_PAYMENT"
+      slot="start">🟠</span>
+    <span *ngIf="selectedOrder.status === orderStatus.EXPIRED_BANK_SLIP ||
+       selectedOrder.status === orderStatus.PENDING_PAYMENT"
+      slot="start">🟡</span>
+    <span *ngIf="selectedOrder.status === orderStatus.PENDING_SHIPPING ||
+       selectedOrder.status === orderStatus.PENDING_DELIVERY || 
+       selectedOrder.status === orderStatus.FINISHED || 
+       selectedOrder.status === orderStatus.REFUNDED_PAYMENT || 
+       selectedOrder.status === orderStatus.CANCELED"
+      slot="start">🟢</span>
+    <b>Status</b>
+    <ng-container *ngIf="selectedOrder.status === orderStatus.EXPIRED_BANK_SLIP; else elseChip0">
+      <ion-chip color="warning"
+        outline>
+        <ion-icon name="barcode"></ion-icon>
+        <ion-label>⌛ Boleto expirado.</ion-label>
+      </ion-chip>
+    </ng-container>
+    <ng-template #elseChip0>
+      <ng-container *ngIf="selectedOrder.status === orderStatus.FAILED_PAYMENT; else elseChip1">
+        <ion-chip color="danger"
+          outline>
+          <ion-label>💳 Pagamento sem sucesso.</ion-label>
+        </ion-chip>
+      </ng-container>
+    </ng-template>
+    <ng-template #elseChip1>
+      <ng-container *ngIf="selectedOrder.status === orderStatus.PENDING_PAYMENT; else elseChip2">
+        <span #span1
+          [element]="span1"
+          content="O boleto bancário pode demorar até 3 dias úteis para ser compensado."
+          appTippy>
+          <ion-chip>
+            <ion-label>
+              ⚠️ Pagamento do boleto pendente.</ion-label>
+          </ion-chip>
+        </span>
+
+      </ng-container>
+    </ng-template>
+    <ng-template #elseChip2>
+      <ng-container *ngIf="selectedOrder.status === orderStatus.PENDING_SHIPPING; else elseChip3">
+        <span #span2
+          [element]="span2"
+          content="Por favor, aguarde enquanto fazemos a postagem."
+          appTippy>
+          <ion-chip color="success"
+            tooltip="">
+            <ion-label>👍 Pedido Pago! Envio pendente.</ion-label>
+          </ion-chip>
+        </span>
+      </ng-container>
+    </ng-template>
+    <ng-template #elseChip3>
+      <ng-container *ngIf="selectedOrder.status === orderStatus.PENDING_DELIVERY; else elseChip4">
+        <ion-chip color="success"
+          class='disabled'
+          disabled>
+          <ion-label>🚛 Produto postado.</ion-label>
+        </ion-chip>
+      </ng-container>
+    </ng-template>
+    <ng-template #elseChip4>
+      <ng-container *ngIf="selectedOrder.status === orderStatus.FINISHED; else elseChip5">
+        <ion-chip color="success">
+          <ion-label>✅ Produto entregue.</ion-label>
+        </ion-chip>
+      </ng-container>
+    </ng-template>
+    <ng-template #elseChip5>
+      <ng-container *ngIf="selectedOrder.status === orderStatus.REFUNDED_PAYMENT; else elseChip6">
+        <ion-chip color="success">
+          <ion-label>👈 Pagamento devolvido.</ion-label>
+        </ion-chip>
+      </ng-container>
+    </ng-template>
+    <ng-template #elseChip6>
+      <ion-chip color="success">
+        <ion-label>❎ Pedido cancelado com sucesso.</ion-label>
+      </ion-chip>
+    </ng-template>
+  </ion-item>
+  <ion-button *ngIf="selectedOrder.status === orderStatus.EXPIRED_BANK_SLIP"
+    color="secondary"
+    fill="solid">
+    <ion-icon name="barcode"
+      slot="start"></ion-icon> Reemitir Boleto Novo
+  </ion-button>
+  <ion-button *ngIf="selectedOrder.status === orderStatus.PENDING_PAYMENT"
+    color="secondary"
+    fill="solid"
+    (click)="navigateExternalLink(selectedOrder.charges.charge.link)">
+    <ion-icon name="barcode"
+      slot="start"></ion-icon> Ver Boleto
+  </ion-button>
+  <ion-button *ngIf="selectedOrder.status === orderStatus.FAILED_PAYMENT"
+    color="secondary"
+    fill="solid">
+    <span slot="start"> 💳 </span>
+    Tentar Pagar Novamente</ion-button>
+  <ion-button
+    *ngIf="selectedOrder.status === orderStatus.PENDING_DELIVERY || selectedOrder.status === orderStatus.FINISHED"
+    color="secondary"
+    fill="solid"
+    (click)="navigateExternalLink('https://rastreamentocorreios.info/consulta/' + selectedOrder.freight.mailTrakingCode)">
+    <ion-icon name="navigate-circle-outline"
+      slot="start"></ion-icon> Rastrear a Entrega
+  </ion-button>
+  <ion-button *ngIf="
+      selectedOrder.status === orderStatus.PENDING_PAYMENT || 
+      (selectedOrder.status === orderStatus.FINISHED && checkRepentance())"
+    color="danger"
+    fill="solid"
+    (click)="cancelOrder(selectedOrder.orderNo, selectedOrder.orderId)">
+    <ion-icon name="close-circle"
+      slot="start"></ion-icon>
+    {{ selectedOrder.status === orderStatus.FINISHED ? 'Eu me arrependi da Compra':'Cancelar Compra'}}
+  </ion-button>
+  <ion-item lines="none">📌<b>Endereço de Entrega</b></ion-item>
+  <ion-item lines="none">
+    <p class="ion-no-margin">
+      <span>{{ selectedOrder.freight.address.street  }}</span>,
+      <span>{{ selectedOrder.freight.address.no }}</span>
+      <span *ngIf="selectedOrder.freight.address.addInfo"> - {{ selectedOrder.freight.address.addInfo }}</span>.
+      <span>Via {{ selectedOrder.freight.freightMode | titlecase}}.</span>
+    </p>
+  </ion-item>
+</ion-list>
+<ion-grid>
+  <ion-row>
+    <ion-col>
+      <p>📦 <b>Produtos</b></p>
+    </ion-col>
+  </ion-row>
+  <ion-row *ngFor="let item of selectedOrder.products">
+    <ion-col>
+      <ion-thumbnail>
+        <img [src]="'assets/img/products/'+ item.brand + '/' + item.productId + '/1.jpg'">
+      </ion-thumbnail>
+    </ion-col>
+    <ion-col>
+      {{ item.skus.length }} x {{ item.skus.length > 1 ? item.unit[1] : item.unit[0] }}
+    </ion-col>
+    <ion-col>
+      {{ item.productName }}
+    </ion-col>
+    <ion-col>
+      {{ item.price * item.skus.length | currency:'BRL' }}
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col offset="12"
+      style="border-top: groove;">
+      Total:
+    </ion-col>
+    <ion-col size="6"
+      style="border-top: groove;">
+      <b>{{ selectedOrder.charges.totalProducts | currency:'BRL'}}</b>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size="10">
+      <p class="ion-no-margin"><b>🚚 Envio </b></p>
+    </ion-col>
+    <ion-col size="8">
+      Envio por {{ selectedOrder.freight.freightMode === 'sedex' ? 'Sedex': 'PAC' }} :
+    </ion-col>
+    <ion-col size="6">
+      <b>{{ selectedOrder.charges.totalShipment | currency:'BRL'}}</b>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size="10">
+      <p class="ion-no-margin"><b>💲 Total</b> </p>
+    </ion-col>
+    <ion-col offset="8"
+      size="6"><b>{{ selectedOrder.charges.totalProducts + selectedOrder.charges.totalShipment | currency:'BRL' }}
+      </b></ion-col>
+  </ion-row>
+</ion-grid>
+<ion-list>
+  <ion-item
+    *ngIf="selectedOrder.status !== orderStatus.CANCELED && selectedOrder.status !== orderStatus.REFUNDED_PAYMENT"
+    color="success"
+    lines="none">
+    <p>
+      Agradecemos 🙏 a preferência, Roy, e nunca se esqueça &nbsp;<strong>SEJE AGRICOLÃO</strong> 🤠🌿🐮💥💥💥!!!
+    </p>
+  </ion-item>
+  <ion-item
+    *ngIf="selectedOrder.status === orderStatus.REFUNDED_PAYMENT || selectedOrder.status === orderStatus.CANCELED"
+    color="dark"
+    lines="none">
+    🤕 Sinceramente lamentamos 😢 por qualquer problema que tenha havido.
+  </ion-item>
+</ion-list>
+<mat-vertical-stepper linear
+  #stepper>
+  <mat-step editable="false"
+    completed="true">
+    <ng-template matStepLabel>Pedido realizado </ng-template>
+    <small>{{ selectedOrder.date | date: '📅 EEEE, d \'de\' MMMM \'de\' y \'às\' 🕑 HH:mm'}}</small>
+  </mat-step>
+  <ng-container *ngIf="selectedOrder.status !== orderStatus.CANCELED; else canceledOrder">
+    <mat-step
+      [completed]="selectedOrder.status === orderStatus.PENDING_SHIPPING || selectedOrder.status === orderStatus.PENDING_DELIVERY || selectedOrder.status === orderStatus.FINISHED"
+      editable="false">
+      <ng-template matStepLabel>Pagamento confirmado </ng-template>
+      <small
+        *ngIf="selectedOrder.status === orderStatus.PENDING_SHIPPING || selectedOrder.status === orderStatus.PENDING_DELIVERY || selectedOrder.status === orderStatus.FINISHED">
+        {{ selectedOrder.charges.paymentMethod === 'boleto' ? parseDate(selectedOrder.payment.payments[0].date) : selectedOrder.date | date: '📅 EEEE, d \'de\' MMMM \'de\' y \'às\' 🕑 HH:mm'}}
+      </small>
+    </mat-step>
+    <mat-step
+      [completed]="selectedOrder.status === orderStatus.PENDING_DELIVERY || selectedOrder.status === orderStatus.FINISHED"
+      editable="false">
+      <ng-template matStepLabel>Pedido Enviado</ng-template>
+      <ng-container
+        *ngIf="selectedOrder.status === orderStatus.PENDING_DELIVERY || selectedOrder.status === orderStatus.FINISHED">
+        <small>{{ selectedOrder.freight.shippingDate | date: '📅 EEEE, d \'de\' MMMM \'de\' y \'às\' 🕑 HH:mm'}}</small>
+        <ng-container *ngIf="selectedOrder.status === orderStatus.PENDING_DELIVERY">
+          Código de Rastreamento:
+          <br>
+          <a
+            [href]="'https://rastreamentocorreios.info/consulta/' + selectedOrder.freight.mailTrakingCode">{{selectedOrder.freight.mailTrakingCode}}</a>
+        </ng-container>
+      </ng-container>
+    </mat-step>
+    <mat-step [completed]="selectedOrder.status === orderStatus.FINISHED"
+      editable="false">
+      <ng-template matStepLabel>
+        Pedido Entregue
+      </ng-template>
+      <ng-container *ngIf="selectedOrder.status === orderStatus.FINISHED">
+        <small>{{ selectedOrder.freight.deliveryDate | date: '📅 EEEE, d \'de\' MMMM \'de\' y \'às\' 🕑 HH:mm'}}</small>
+        Código de Rastreamento:
+        <br>
+        <a
+          [href]="'https://rastreamentocorreios.info/consulta/' + selectedOrder.freight.mailTrakingCode">{{selectedOrder.freight.mailTrakingCode}}</a>
+      </ng-container>
+    </mat-step>
+  </ng-container>
+  <ng-template #canceledOrder>
+    <mat-step completed
+      editable="false">
+      <ng-template matStepLabel>
+        Pedido Cancelado
+      </ng-template>
+      <ng-container>
+        <small>{{ selectedOrder.cancel.canceledDate | date: '📅 EEEE, d \'de\' MMMM \'de\' y \'às\' 🕑 HH:mm'}}</small>
+      </ng-container>
+    </mat-step>
+  </ng-template>
+</mat-vertical-stepper>
+<ion-buttons *ngIf="
+  selectedOrder.status === orderStatus.PENDING_SHIPPING || 
+  selectedOrder.status === orderStatus.PENDING_DELIVERY || 
+  selectedOrder.status === orderStatus.FINISHED">
+  <ion-list>
+    <ion-button *ngIf="!selectedOrder.nfe; else invoice"
+      color="primary"
+      fill="solid">
+      📃 Emitir nota para o CPF: <b>{{ selectedOrder.cpf }}</b>
+    </ion-button>
+    <ng-template #invoice>
+      <ion-item color="success"
+        *ngIf="!selectedOrder.nfe; else invoiceDone"
+        lines="none">Em breve você receberá sua nota fiscal, por
+        gentileza aguarde.</ion-item>
+      <ng-template #invoiceDone>
+        <ion-button color="primary"
+          *ngIf="selectedOrder.nfe">
+          Ver Nota Fiscal
+        </ion-button>
+      </ng-template>
+    </ng-template>
+  </ion-list>
+</ion-buttons>

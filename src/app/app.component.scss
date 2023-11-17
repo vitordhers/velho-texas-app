@@ -1,0 +1,12 @@
+.split-pane-md.split-pane-visible > .split-pane-side {
+  max-width: 20% !important;
+  border-right: none;
+}
+
+ion-content {
+  border-right: 1px solid
+    var(
+      --ion-item-border-color,
+      var(--ion-border-color, var(--ion-color-step-150, rgba(0, 0, 0, 0.13)))
+    );
+}

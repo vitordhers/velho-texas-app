@@ -1,0 +1,226 @@
+<ion-header *ngIf="platform.is('mobile')">
+  <ion-toolbar color="tertiary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>⚙️Configurações</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="form">
+    <ion-grid fixed>
+      <ion-row>
+        <ion-col size="24"
+          size-md="4"
+          offset-md="4"
+          class="ion-no-padding">
+          <ion-list class="ion-no-padding">
+            <ion-item lines="none">
+              <b [slot]="platform.is('mobile')? 'start' : 'end'">📧E-mail</b>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+        <ion-col size="24"
+          size-md="6"
+          class="ion-no-padding ion-text-right">
+          <ion-list class="ion-no-padding">
+            <ion-item lines="none">
+              <ion-skeleton-text animated
+                style="width: 100%"
+                *ngIf="dataLoaded === false; else email"></ion-skeleton-text>
+              <ng-template #email>
+                <span>{{ userData?.email ? userData.email : ''}}</span>
+                &nbsp;
+                <span #span1
+                  appTippy
+                  [element]="span1"
+                  [content]="userData?.status === userStatus.REGISTERED_AND_CONFIRMED ? 'E-mail confirmado!':'Aguardando confirmação do e-mail'">
+                  <ion-icon slot="end"
+                    [name]="userData?.status === userStatus.REGISTERED_AND_CONFIRMED ? 'checkmark-circle' : 'ellipse-outline'"
+                    [color]="userData?.status === userStatus.REGISTERED_AND_CONFIRMED ? 'success' : 'medium'">
+                  </ion-icon>
+                </span>
+              </ng-template>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+        <ion-col size="24"
+          size-md="4"
+          class="ion-no-padding">
+          <ion-list class="ion-no-padding">
+            <ion-button size="small"
+              [expand]="platform.is('mobile')? 'block' : ''"
+              (click)="changeEmail()"
+              *ngIf="userData?.status === userStatus.REGISTERED_AND_CONFIRMED; else waiting">
+              <ion-icon name="mail"
+                slot="start"></ion-icon> Mudar e-mail
+            </ion-button>
+            <ng-template #waiting>
+              <ion-item lines="none"
+                *ngIf="platform.is('mobile')">
+                <small>Aguardando confirmação do e-mail</small>
+              </ion-item>
+              <span #span2
+                [element]="span2"
+                [content]="'Reenviar e-mail de confirmação para '+ userData?.email"
+                appTippy>
+                <ion-button size="small"
+                  expand="block"
+                  (click)="resendEmail(userData?.email)">
+                  <ion-icon slot="start"
+                    name="mail-unread"
+                    slot="start"></ion-icon> Reenviar
+                </ion-button>
+              </span>
+            </ng-template>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="24"
+          size-md="4"
+          offset-md="4"
+          class="ion-no-padding">
+          <ion-list class="ion-no-padding">
+            <ion-item lines="none">
+              <b [slot]="platform.is('mobile')? 'start' : 'end'">🤠 Nome</b>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+        <ion-col size="24"
+          size-md="6"
+          class="ion-no-padding">
+          <ion-list class="ion-no-padding">
+            <ion-item>
+              <ion-input type="text"
+                formControlName="name"
+                maxlength="50"></ion-input>
+            </ion-item>
+            <ng-container *ngIf="!form.get('name').valid && form.get('name').touched">
+              <ng-container *ngFor="let error of fields.name.errors| keyvalue">
+                <small class="small-error"
+                  *ngIf="form.get('name').hasError(error.key)">
+                  {{ error.value }}
+                </small>
+              </ng-container>
+            </ng-container>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="24"
+          size-md="4"
+          offset-md="4"
+          class="ion-no-padding">
+          <ion-list class="ion-no-padding">
+            <ion-item lines="none">
+              <b [slot]="platform.is('mobile')? 'start' : 'end'">📱 Celular</b>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+        <ion-col size="24"
+          size-md="6"
+          class="ion-no-padding">
+          <ion-list class="ion-no-padding">
+            <ion-item>
+              <ion-input type="text"
+                formControlName="celphoneNumber"
+                appCellphoneBr
+                maxlength="15"></ion-input>
+            </ion-item>
+            <ng-container *ngIf="!form.get('celphoneNumber').valid && form.get('celphoneNumber').touched ">
+              <ng-container *ngFor="let error of fields.celphoneNumber.errors| keyvalue">
+                <small class="small-error"
+                  *ngIf="form.get('celphoneNumber').hasError(error.key)">
+                  {{ error.value }}
+                </small>
+              </ng-container>
+            </ng-container>
+          </ion-list>
+        </ion-col>
+        <ion-col size="24"
+          size-md="4"
+          class="ion-no-padding"
+          *ngIf="form.get('celphoneNumber').valid && form.get('celphoneNumber').value != undefined">
+          <ion-list class="ion-no-padding">
+            <ion-item lines="none">
+              <ion-checkbox formControlName="whatsapp">
+              </ion-checkbox>
+              <small>Esse número tem <ion-icon class="wpp"
+                  name="logo-whatsapp"></ion-icon> Whatsapp</small>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="24"
+          size-md="6"
+          offset-md="8">
+          <ion-list>
+            <ion-button expand="block"
+              (click)="changePassword()">
+              <ion-icon name="lock-open"
+                slot="start"></ion-icon> {{ userData?.password ? 'Mudar': 'Criar'}}
+              Senha
+            </ion-button>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="24"
+          size-md="18"
+          offset-md="6">
+          <ion-list>
+            <ion-item lines="none">
+              <p>Receber promoções e novidades</p>
+              <span slot="start">📢</span>
+            </ion-item>
+            <ion-item-group class="ion-padding-start"
+              formGroupName="communication">
+              <ion-item lines="none">
+                <ion-label> por E-mail</ion-label>
+                <ion-icon name="mail"
+                  slot="start"></ion-icon>
+                <ion-checkbox slot="start"
+                  formControlName="mailcomm">
+                </ion-checkbox>
+              </ion-item>
+              <ion-item lines="none"
+                *ngIf="(form.get('celphoneNumber').valid && form.get('celphoneNumber').value !== '')  
+              && form.get('whatsapp').value === true">
+                <ion-label>por Whatsapp</ion-label>
+                <ion-icon class="wpp"
+                  name="logo-whatsapp"
+                  slot="start"></ion-icon>
+                <ion-checkbox slot="start"
+                  formControlName="wppcomm">
+                </ion-checkbox>
+              </ion-item>
+            </ion-item-group>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="24"
+          size-md="8"
+          offset-md="6">
+          <ion-list>
+            <ion-button type="button"
+              type="submit"
+              fill="solid"
+              color="tertiary"
+              expand="block"
+              [disabled]="isLoading">
+              <ion-icon name="refresh"
+                slot="start"></ion-icon>
+              Atualizar Configurações
+            </ion-button>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>

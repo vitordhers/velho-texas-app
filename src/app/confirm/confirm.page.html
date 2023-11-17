@@ -1,0 +1,69 @@
+<ion-content class="ion-padding">
+  <ion-grid fixed>
+    <ion-row *ngIf="!dataLoaded; else loadedData">
+      <ion-col size="24"
+        size-md="16"
+        offset-md="4"
+        class="ion-text-center">
+        <ion-title>
+          <ion-spinner></ion-spinner> Guenta Mão...
+        </ion-title>
+      </ion-col>
+    </ion-row>
+    <ng-template #loadedData>
+      <ion-row *ngIf="confirmed === true; else confirm">
+        <ion-col size="24"
+          size-md="16"
+          offset-md="4">
+          <p *ngIf="resultText.length > 40">
+            {{ resultText }}
+          </p>
+          <ion-title *ngIf="40 > resultText.length">
+            {{ resultText }}
+          </ion-title>
+          <a routerLink="/entrar">🚪 Entrar</a>
+        </ion-col>
+      </ion-row>
+      <ng-template #confirm>
+        <ng-container *ngIf="password === false">
+          <form [formGroup]="form">
+            <ion-row>
+              <ion-col size="24"
+                size-md="16"
+                offset-md="4">
+                <ion-title>
+                  🔐 Insira sua senha, Roy!
+                </ion-title>
+                <p> Segundo o xerife, você ainda não possui uma senha. Para acessar usando seu e-mail, é preciso que
+                  você cadastre uma senha.
+                </p>
+                <p *ngIf="currentStatus === userStatus.OAUTHREGISTERED">
+                  ⚠️ O xerife disse também que você se cadastrou através de uma rede social. Enquanto não cadastrar sua
+                  senha, só conseguirá entrar através do botão da rede social, rapaiz.
+                </p>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="24"
+                size-md="8"
+                offset-md="8">
+                <app-passwords-input (passwordChange)="passwordUpdate($event)"></app-passwords-input>
+                <ion-buttons>
+                  <ion-button color="primary"
+                    expand="block"
+                    fill="solid"
+                    (click)="confirmEmailAndPassword()"
+                    [disabled]="isLoading">
+                    <ion-spinner *ngIf="isLoading"
+                      slot="start"></ion-spinner>
+                    {{!isLoading? 'Salvar senhas e confirmar e-mail!' : 'Guenta mão...' }}
+                  </ion-button>
+                </ion-buttons>
+              </ion-col>
+            </ion-row>
+          </form>
+        </ng-container>
+      </ng-template>
+    </ng-template>
+  </ion-grid>
+</ion-content>

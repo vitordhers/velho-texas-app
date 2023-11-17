@@ -1,0 +1,89 @@
+.mat-drawer-container {
+  background-color: transparent;
+}
+ion-chip {
+  font-size: 13px;
+}
+
+::ng-deep .mat-drawer-inner-container {
+  overflow: hidden !important;
+}
+
+.mat-expansion-panel:not([class*="mat-elevation-z"]) {
+  box-shadow: none !important;
+}
+
+::ng-deep .mat-expansion-panel-body {
+  padding: 0px !important;
+}
+
+::ng-deep .mat-expansion-indicator::after {
+  color: var(--ion-color-primary) !important;
+}
+
+.mat-drawer-side {
+  border: none;
+}
+
+.mat-expansion-panel-header-description,
+.mat-expansion-indicator::after {
+  color: rgba(0, 0, 0, 1);
+}
+
+.material-icons {
+  line-height: 2 !important;
+  font-size: 20px;
+}
+
+.filter {
+  font-size: 13px;
+}
+
+@media only screen and (min-width: 576px) {
+  mat-drawer {
+    flex: 0 0 calc(calc(4 / var(--ion-grid-columns, 12)) * 100%);
+    width: calc(calc(4 / var(--ion-grid-columns, 12)) * 100%);
+    max-width: calc(calc(4 / var(--ion-grid-columns, 12)) * 100%);
+  }
+
+  mat-drawer-content {
+    flex: 0 0 calc(calc(20 / var(--ion-grid-columns, 12)) * 100%);
+    width: calc(calc(20 / var(--ion-grid-columns, 12)) * 100%);
+    max-width: calc(calc(20 / var(--ion-grid-columns, 12)) * 100%);
+    ion-grid {
+      margin-left: calc(calc(1 / var(--ion-grid-columns, 12)) * 100%);
+    }
+  }
+}
+
+::ng-deep .mat-menu-content {
+  padding: 0px !important;
+}
+
+.menuSelected {
+  border-left: 2px solid #5a1f01;
+}
+
+.fullcontent {
+  height: calc(100vh - 98px);
+}
+
+.chip {
+  margin: 4px 4px 4px 0px;
+}
+
+.hidden {
+  display: none;
+}
+
+.price {
+  font-size: 18px;
+
+  ion-badge {
+    font-size: 22px;
+
+    sup {
+      line-height: 2;
+    }
+  }
+}

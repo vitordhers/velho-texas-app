@@ -1,0 +1,27 @@
+.passwordIcon {
+  font-size: 2rem !important;
+  position: relative !important;
+  top: 22px !important;
+  margin: 0 auto !important;
+}
+
+.google-button {
+  --background: #4285f4;
+  --background-activated: #0059c1;
+  --background-focused: #0059c1;
+  --background-hover: #80b4ff;
+  --color: #fff;
+}
+
+.facebook-button {
+  --background: #3b5998;
+  --background-activated: #dfe3ee;
+  --background-focused: #dfe3ee;
+  --background-hover: #8b9dc3;
+}
+
+.loadingbox {
+  display: flex;
+  text-align: center;
+  height: calc(100vh - 52px);
+}

@@ -1,0 +1,41 @@
+.md .logo {
+  height: 56px;
+  width: 53px;
+}
+
+.ios .logo {
+  height: 38px;
+  width: 36.7px;
+}
+
+.wpp {
+  color: #1ebea5;
+}
+
+.ion-activatable {
+  p {
+    a {
+      position: relative;
+      z-index: 10;
+    }
+  }
+}
+
+ion-list {
+  margin-bottom: 0px !important;
+}
+
+.passwordIcon {
+  font-size: 2rem !important;
+  position: relative !important;
+  top: 22px !important;
+  margin: 0 auto !important;
+}
+
+mat-form-field .mat-form-field-wrapper{
+  padding: 0px;
+}
+.mat-form-field-infix{
+  border: 0px;
+  padding: 0px;
+}

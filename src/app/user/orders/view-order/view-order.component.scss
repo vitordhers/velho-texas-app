@@ -1,0 +1,21 @@
+.sc-ion-card-md-h {
+  border-radius: 0px !important;
+}
+
+ion-chip {
+  cursor: default !important;
+}
+
+::ng-deep .mat-vertical-stepper-content {
+  visibility: visible !important;
+  height: 100% !important;
+}
+
+::ng-deep .mat-step-header {
+  pointer-events: none !important;
+  padding: 16px 24px !important;
+}
+
+ion-chip ion-label {
+  line-height: 1.3;
+}

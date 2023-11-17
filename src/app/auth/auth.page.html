@@ -1,0 +1,121 @@
+<ion-content class="ion-padding">
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col size-md="8"
+        offset-md="8"
+        size-sm="16"
+        offset-sm="4">
+        <div class="loadingbox"
+          *ngIf="loadingPage; else login">
+          <ion-title>
+            <ion-spinner></ion-spinner> Carregando...
+          </ion-title>
+        </div>
+        <ng-template #login>
+          <form [formGroup]="form">
+            <ion-list>
+              <ion-item [ngClass]="{'ion-touched': form.get('email').touched }">
+                <ion-label position="floating">E-mail</ion-label>
+                <ion-input type="email"
+                  formControlName="email"
+                  email
+                  required
+                  maxlength="30"></ion-input>
+              </ion-item>
+              <span *ngIf="!form.get('email').valid && form.get('email').touched">
+                <small class="small-error"
+                  *ngIf="form.get('email').hasError('required')">
+                  O e-mail é necessário para entrar, abrutre!
+                </small>
+                <small class="small-error"
+                  *ngIf="form.get('email').hasError('email')">
+                  Ei Jesse, esse endereço de e-mail não é válido!
+                </small>
+                <small class="small-error"
+                  *ngIf="form.get('email').hasError('minlength')">
+                  O e-mail deve ter pelo menos 6 caracteres, Roy!
+                </small>
+                <small class="small-error"
+                  *ngIf="form.get('email').hasError('maxlength')">
+                  O e-mail deve ter até 30 caracteres, Roy!
+                </small>
+              </span>
+
+              <ion-item [ngClass]="{'ion-touched': form.get('password').touched }">
+                <ion-label position="floating">Senha</ion-label>
+                <ion-input [type]="passwordType"
+                  formControlName="password"
+                  clearOnEdit="false"
+                  required
+                  maxlength="30">
+                </ion-input>
+                <ion-icon slot="end"
+                  [name]="passwordIcon"
+                  class="passwordIcon"
+                  (click)='hideShowPassword()'></ion-icon>
+              </ion-item>
+              <span *ngIf="!form.get('password').valid && form.get('password').touched">
+                <small class="small-error"
+                  *ngIf="form.get('password').hasError('required')">
+                  A senha é obrigatória, Roy!
+                </small>
+                <small class="small-error"
+                  *ngIf="form.get('password').hasError('minlength')">
+                  A senha deve ter pelo menos 6 caracteres, Roy!
+                </small>
+                <small class="small-error"
+                  *ngIf="form.get('password').hasError('maxlength')">
+                  A senha deve ter até 30 caracteres, Roy!
+                </small>
+              </span>
+            </ion-list>
+            <input type="hidden"
+              formControlName="recaptcha">
+            <ion-button type="submit"
+              color="primary"
+              fill="outline"
+              expand="block"
+              (click)="onLogin()"
+              [disabled]="loading">
+              <ion-spinner *ngIf="loading"></ion-spinner> {{ loading === false ? '🚪 Entrar' : 'Entrando...' }}
+            </ion-button>
+            <ion-button expand="block"
+              class="google-button"
+              [href]="apiUrl + 'auth/google'"
+              [disabled]="loading">
+              <ion-icon name="logo-google"
+                slot="start"></ion-icon>
+              Entrar com o Google
+            </ion-button>
+            <ion-button expand="block"
+              class="facebook-button"
+              [href]="apiUrl + 'auth/facebook'"
+              [disabled]="loading">
+              <ion-icon name="logo-facebook"
+                slot="start"></ion-icon>
+              Entrar com o Facebook
+            </ion-button>
+            <ion-toolbar>
+              <ion-buttons slot="primary">
+                <ion-button type="button"
+                  fill="solid"
+                  color="secondary"
+                  [disabled]="loading"
+                  (click)="presentModal()">
+                  Problemas para entrar? 🤔
+                </ion-button>
+              </ion-buttons>
+            </ion-toolbar>
+            <ion-label>Ainda não é conhecido no Velho Texas?</ion-label>
+            <ion-button color="secondary"
+              expand="block"
+              routerLink="/registrar"
+              [disabled]="loading">
+              📝 Registrar
+            </ion-button>
+          </form>
+        </ng-template>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

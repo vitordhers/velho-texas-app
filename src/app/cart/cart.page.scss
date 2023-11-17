@@ -1,0 +1,316 @@
+@font-face {
+  font-family: "credit_cardregular";
+  src: url("../../assets/fonts/credit-card/credc___-webfont.woff2")
+      format("woff2"),
+    url("../../assets/fonts/credit-card/credc___-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+mat-expansion-panel-header {
+  background-color: var(--ion-color-primary);
+  h3 {
+    color: #fff;
+  }
+  &:hover {
+    background-color: var(--ion-color-primary-shade) !important;
+  }
+  &:focus {
+    background-color: var(--ion-color-primary-shade) !important;
+  }
+}
+
+ion-row {
+  ion-col {
+    text-align: -webkit-center;
+  }
+}
+
+.mat-expansion-panel.mat-expanded {
+  height: 100%;
+}
+
+.noaddress {
+  border-radius: 4px;
+}
+
+.payment .mat-expansion-panel-body {
+  padding: 0px !important;
+}
+
+.creditcard {
+  backface-visibility: visible;
+  position: relative;
+  width: 260px;
+  height: 160px;
+  margin-top: 25%;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-radius: 5px;
+  transform: perspective(300px);
+
+  .cardback {
+    opacity: 0;
+    position: absolute;
+
+    .whitestrip {
+      position: absolute;
+      background-color: white;
+      height: 30px;
+      width: 240px;
+      top: -100px;
+      left: 10px;
+    }
+
+    .magneticstrip {
+      width: 260px;
+      height: 33px;
+      background-color: black;
+      top: -145px;
+      position: absolute;
+    }
+
+    .cvv {
+      border-radius: 100%;
+      border: 3px solid transparent;
+      position: absolute;
+      bottom: 80px;
+      left: 20px;
+    }
+  }
+}
+
+.ccard {
+  font-family: "credit_cardregular", Arial, sans-serif;
+  font-size: 14px;
+  background: -webkit-linear-gradient(#eee, #333);
+  filter: drop-shadow(1px 1px 0px black);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-emphasis-color: transparent;
+  align-self: flex-end;
+  position: relative;
+  bottom: 10px;
+}
+
+.cardno {
+  align-self: center;
+  bottom: 20px;
+}
+
+.ccardsub {
+  display: flex;
+  justify-content: space-around;
+}
+
+.carddue {
+  font-size: 12px;
+}
+
+.boletowarning {
+  margin: 0 24px 16px;
+}
+
+.chip {
+  width: 46px;
+  height: 35px;
+  position: absolute;
+  top: 47px;
+  left: 21px;
+}
+
+.bannerlogo {
+  width: 67px;
+  height: 42px;
+  position: absolute;
+  top: 22px;
+  right: 20px;
+  border-radius: 4px;
+}
+
+.creditcardcolor {
+  border-radius: inherit;
+  position: absolute;
+  display: block;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  // opacity: 0;
+  width: 100%;
+}
+
+.genericCard {
+  background: rgb(255, 255, 255);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(219, 219, 219, 1) 60%
+  );
+
+  .bannerlogo {
+    background-color: #9f9f9f;
+  }
+}
+
+.visa {
+  background: rgb(28, 134, 213);
+  background: linear-gradient(
+    135deg,
+    rgba(28, 134, 213, 1) 0%,
+    rgba(112, 198, 247, 1) 60%
+  );
+
+  .bannerlogo {
+    background-color: transparent;
+    background-image: url("../../assets/img/credit-cards/visa.svg");
+    background-size: 68px 34px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+
+.mastercard {
+  background: rgb(115, 169, 27);
+  background: linear-gradient(
+    137deg,
+    rgba(115, 169, 27, 1) 0%,
+    rgba(188, 218, 102, 1) 100%
+  );
+
+  .bannerlogo {
+    background-color: transparent;
+    background-image: url("../../assets/img/credit-cards/mastercard.svg");
+    background-size: 68px 34px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+
+.amex {
+  background-color: transparent;
+  background-image: url("../../assets/img/credit-cards/amex.png");
+  // background-size: 68px 34px;
+  background-repeat: no-repeat;
+  background-position: center;
+  .cvv {
+    border-radius: 100%;
+    color: #000;
+    position: absolute;
+    top: 75px;
+    right: 20px;
+  }
+}
+
+.jcb15,
+.jcb16 {
+  background: rgb(254, 251, 225);
+  background: linear-gradient(
+    178deg,
+    rgba(254, 251, 225, 1) 0%,
+    rgba(200, 182, 107, 1) 100%
+  );
+
+  .bannerlogo {
+    width: 67px;
+    height: 42px;
+    position: absolute;
+    border-radius: 4px;
+    bottom: 16px;
+    right: 14px;
+    background-color: transparent;
+    background-image: url("../../assets/img/credit-cards/jcb.svg");
+    background-size: 68px 42px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+
+.hipercard {
+  background: rgb(180, 58, 58);
+  background: linear-gradient(
+    137deg,
+    rgba(180, 58, 58, 1) 0%,
+    rgba(253, 29, 29, 1) 50%
+  );
+
+  .bannerlogo {
+    width: 100px;
+    height: 42px;
+    top: 5px;
+    left: 20px;
+    background-color: transparent;
+    background-image: url("../../assets/img/credit-cards/hipercard.svg");
+    background-size: 100px 42px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+
+.discover {
+  background: rgb(238, 174, 202);
+  background: radial-gradient(
+    circle,
+    rgba(238, 174, 202, 1) 0%,
+    rgba(148, 187, 233, 1) 100%
+  );
+
+  .bannerlogo {
+    background-color: transparent;
+    background-image: url("../../assets/img/credit-cards/discover.svg");
+    background-size: 68px 34px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+
+.diners {
+  background: rgb(254, 251, 225);
+  background: linear-gradient(
+    8deg,
+    rgba(254, 251, 225, 1) 0%,
+    rgba(157, 157, 157, 1) 100%
+  );
+
+  .bannerlogo {
+    background-color: transparent;
+    background-image: url("../../assets/img/credit-cards/diners.svg");
+    background-size: 68px 34px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+
+.aura {
+  background: -webkit-linear-gradient(to right, #000c40, #f0f2f0);
+  background: linear-gradient(to right, #000c40, #f0f2f0);
+
+  .bannerlogo {
+    background-color: transparent;
+    background-image: url("../../assets/img/credit-cards/aura.svg");
+    background-size: 68px 34px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+
+.elo {
+  background: -webkit-linear-gradient(to right, #000000, #434343);
+  background: linear-gradient(to right, #000000, #434343);
+
+  .bannerlogo {
+    background-color: transparent;
+    background-image: url("../../assets/img/credit-cards/elo.svg");
+    background-size: 68px 34px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+
+.alert-wrapper.sc-ion-alert-md {
+  max-width: none;
+}

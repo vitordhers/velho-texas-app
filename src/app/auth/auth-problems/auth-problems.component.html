@@ -1,0 +1,25 @@
+<ion-header>
+    <ion-toolbar color="primary">
+        <ion-title>Problemas para Entrar? 🤔</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <p class="ion-padding-horizontal">⚠️ As duas últimas soluções abaixo são para quem ainda não confirmaram seu e-mail.
+        <br>👉Se você já confirmou e esqueceu a senha, selecione a primeira opção.
+        <br>👉👉 Se num sabe se já confirou ou não, selecione a segunda.</p>
+    <ion-title>Selecione o problema:</ion-title>
+    <ion-list>
+        <ion-item button
+            lines="none"
+            (click)="forgotPassword()"><span slot="start"> 🔒 </span>Eu esqueci minha senha.</ion-item>
+        <ion-item button
+            lines="none"
+            (click)="resendConfirmation()"><span slot="start"> 📧 </span>Eu quero receber um novo e-mail de confirmação.
+        </ion-item>
+        <ion-item button
+            lines="none"
+            (click)="socialNetworkDeleted()"><span slot="start"> 🗑️ </span>Eu apaguei a rede social que usava para
+            entrar.</ion-item>
+    </ion-list>
+</ion-content>

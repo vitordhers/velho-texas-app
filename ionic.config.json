@@ -1,0 +1,7 @@
+{
+  "name": "OldTexasApp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

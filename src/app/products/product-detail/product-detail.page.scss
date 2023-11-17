@@ -1,0 +1,44 @@
+.img-decoy {
+  min-height: 350px;
+  background-repeat: no-repeat !important;
+  //background-attachment: fixed;
+  background-position: center center !important;
+}
+
+.qttbtn {
+  --padding-end: 6.205px;
+  --padding-start: 6.205px;
+}
+
+.skeleton-avatar {
+  // altura pra large
+  max-height: 350px;
+  height: min(350px, 100%);
+  margin: 0px auto;
+  width: 100%;
+  max-width: 180px;
+  --border-radius: 0%;
+}
+
+@media only screen and (max-width: 720px) {
+  h3,
+  h4 {
+    margin: 0px;
+  }
+  ion-col {
+    padding: 0px;
+  }
+
+  .skeleton-avatar {
+    height: 350px;
+    max-width: 350px;
+    width: calc(calc(12 / var(--ion-grid-columns, 12)) * 100%);
+  }
+}
+
+@media only screen and (max-width: 340px) {
+
+  .skeleton-avatar {
+    height: 310px;
+  }
+}
